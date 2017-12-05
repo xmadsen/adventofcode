@@ -34,7 +34,7 @@ inputs = [int(instr) for instr in instring.split('\n')]
 index = 0
 steps = 0
 
-while index < len(inputs):
+while index in range(len(inputs)):
     #print(index, inputs[index])
     offset = int(inputs[index])
     inputs[index] += 1
@@ -58,7 +58,7 @@ inputs2 = [int(instr) for instr in instring.split('\n')]
 index2 = 0
 steps2 = 0
 
-while index2 < len(inputs2):
+while index2 in range(len(inputs2)):
     offset = int(inputs2[index2])
     if offset >= 3:
         inputs2[index2] -= 1
