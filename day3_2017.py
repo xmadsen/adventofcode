@@ -84,6 +84,8 @@ print("Part 1 solution :", get_distance(289326))
 # 362  747  806--->   ...
 # What is the first value written that is larger than your puzzle input?
 
+
+# get_spiral_locs adapted from https://stackoverflow.com/a/398302/8419074
 def get_spiral_locs(X, Y):
     x = y = 0
     dx = 0
