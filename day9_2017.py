@@ -80,11 +80,10 @@ layer = 0
 for char in stream:
     if char == "{":
         layer += 1
-      #  print(score)
     elif char == "}":
         score += layer
         layer -= 1
-    #    print(score)
+
 print("Part 1 solution :", score)
 
 # --- Part Two ---
