@@ -173,7 +173,6 @@ def join_to_grid(minigrids):
 
     for i in range(numrows):
         for j in range(numrows):
-            # print(minigrids)
             if len(gridrows[i]) == 0:
                 gridrows[i] = str_to_np(minigrids[i * numrows + j])
             else:
@@ -227,10 +226,6 @@ def grid_to_squares(grid):
 
     return([grid_to_str(minigrid.tolist()) for minigrid in minigrids])
 
-art = '.#./..#/###'
-
-num_iterations = 5
-
 
 def generate_art(art, num_iterations):
     for i in range(num_iterations):
@@ -245,20 +240,19 @@ def generate_art(art, num_iterations):
                     subgrid = flip_string(subgrid)
                 else:
                     subgrid = rotate_str(subgrid)
-                # print(subgrid)
                 attempted_orientations += 1
             newlist.append(rules_dict[subgrid])
 
         art = join_to_grid(newlist)
     return(art)
 
+art = '.#./..#/###'
+
 art1 = generate_art(art, num_iterations=5)
-print(str_to_np(art1))
 print("Part 1 solution :", sum([el.count('#') for el in art1]))
 
 
 # --- Part Two ---
 # How many pixels stay on after 18 iterations?
 art2 = generate_art(art, num_iterations=18)
-print(str_to_np(art2))
 print("Part 2 solution :", sum([el.count('#') for el in art2]))
