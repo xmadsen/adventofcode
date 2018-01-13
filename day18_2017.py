@@ -57,15 +57,18 @@ instring = "set i 31\nset a 1\nmul p 17\njgz p p\nmul a 2\nadd i -1\njgz i -2\na
 
 instructions = []
 
+# Parse input
 for line in instring.split('\n'):
     inst = line.split(' ')[0]
     inputs = list(line.split(' ')[1:])
 
+    if not inputs[0].isalpha():
+        inputs[0] = int(inputs[0])
+
     if len(inputs) == 2:
-        if not inputs[0].isalpha():
-            inputs[0] = int(inputs[0])
         if not inputs[1].isalpha():
             inputs[1] = int(inputs[1])
+
     instructions.append([inst] + inputs)
 
 register = {chr(i): 0 for i in range(97, 123)}
@@ -73,6 +76,7 @@ played_freqs = []
 
 
 def correct_val(input):
+    """ Return either the register value or the integer value, as appropriate."""
     if isinstance(input, str):
         return(register[input])
     else:
@@ -243,12 +247,11 @@ def do_instruction2(this_id, instruction):
 i0, i1 = 0, 0
 inc0, inc1 = -1, -1
 
-testnum = 20
-i = 1
 while not blocked0 or not blocked1:
     inc0 = do_instruction2(0, instructions[i0])
     inc1 = do_instruction2(1, instructions[i1])
     i0 += inc0
     i1 += inc1
-    i += 1
+
+
 print("Part 2 solution :", sends1)
