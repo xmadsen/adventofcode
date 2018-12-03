@@ -40,7 +40,7 @@ def part1():
             else:
                 grid_occurrences[this_tuple] += 1
 
-    two_pluses = sum([True for item in grid_occurrences if item >= 2])
+    two_pluses = sum([True for item in grid_occurrences.values() if item >= 2])
 
     end = time.time()
     return two_pluses, end-start
