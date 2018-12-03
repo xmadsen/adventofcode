@@ -6,6 +6,7 @@ from itertools import cycle
 input_file = sys.argv[1]
 
 id_data = []
+grid_occurrences = {}
 with open(input_file) as file:
     for line in file.readlines():
         this_id = {}
@@ -29,18 +30,26 @@ def get_all_tuples(xloc, yloc, xsize, ysize):
 
 def part1():
     global id_data
+    global grid_occurrences
     start = time.time()
-    grid_occurrences = {}
-    for id in id_data:
+
+    for this_id in id_data:
         these_tuples = get_all_tuples(
-            id['xloc'], id['yloc'], id['xsize'], id['ysize'])
+            this_id['xloc'], this_id['yloc'], this_id['xsize'], this_id['ysize'])
         for this_tuple in these_tuples:
             if this_tuple not in grid_occurrences:
-                grid_occurrences[this_tuple] = 1
+                grid_occurrences[this_tuple] = {}
+                grid_occurrences[this_tuple]['count'] = 1
             else:
-                grid_occurrences[this_tuple] += 1
+                grid_occurrences[this_tuple]['count'] += 1
 
-    two_pluses = sum([True for item in grid_occurrences.values() if item >= 2])
+            if 'ids' not in grid_occurrences[this_tuple].keys():
+                grid_occurrences[this_tuple]['ids'] = [this_id['id']]
+            else:
+                grid_occurrences[this_tuple]['ids'].append(this_id['id'])
+
+    two_pluses = sum(
+        [True for item in grid_occurrences.values() if item['count'] >= 2])
 
     end = time.time()
     return two_pluses, end-start
@@ -49,7 +58,23 @@ def part1():
 
 
 def part2():
-    return
+    start = time.time()
+    global grid_occurrences, id_data
+    ids_collided = {id['id']: 0 for id in id_data}
+    for id in range(1, id_data[-1]['id']+1):
+        if ids_collided[id] == 0:
+            for value in grid_occurrences.values():
+                if id in value['ids']:
+                    if value['ids'] == [id]:
+                        continue
+                    else:
+                        for id in value['ids']:
+                            ids_collided[id] += 1
+                        break
+    uncollided_id = [id1 for id1, count in ids_collided.items()
+                     if count == 0][0]
+    end = time.time()
+    return uncollided_id, end-start
 
 
 print("    Part 1 : {}".format(part1()))
