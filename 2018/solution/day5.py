@@ -11,11 +11,7 @@ with open(input_file) as file:
 # Part 1
 
 
-def part1():
-    global initial_polymer
-    polymer = str(initial_polymer)
-    start = time.time()
-
+def process_polymer(polymer):
     match_found = True
     while match_found:
         match_found = False
@@ -25,18 +21,35 @@ def part1():
                 match_found = True
                 polymer = polymer[:i]+"--"+polymer[i+2:]
         polymer = polymer.replace("-", '')
+    return polymer
 
+
+def part1():
+    global initial_polymer
+    start = time.time()
+    processed_polymer = process_polymer(initial_polymer)
     end = time.time()
-    return len(polymer), end-start
+    return len(processed_polymer), end-start
 
 # Part 2
 
 
 def part2():
-    return
+    global initial_polymer
+    start = time.time()
+    optimized_polymer_lengths = {}
+    for letter in 'abcdefghijklmnopqrstuvwxyz':
+        optimized_polymer = initial_polymer.replace(
+            letter, '').replace(letter.upper(), '')
+        optimized_polymer_lengths[letter] = len(
+            process_polymer(optimized_polymer))
+
+    shortest_polymer = min(optimized_polymer_lengths.values())
+    end = time.time()
+    return shortest_polymer, end-start
 
 
 p1answer, p1time = part1()
-#p2answer, p2time = part2()
+p2answer, p2time = part2()
 print("    Part 1 : {}\n             {:.5f}s".format(p1answer, p1time))
 print("    Part 2 : {}\n             {:.5f}s".format(p2answer, p2time))
