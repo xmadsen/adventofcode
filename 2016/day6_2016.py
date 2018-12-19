@@ -54,7 +54,6 @@ for charlist in charlists.values():
 
 print("Part 1 solution :", message)
 
-
 # --- Part Two ---
 # Of course, that would be the message - if you hadn't agreed to use a
 # modified repetition code instead.

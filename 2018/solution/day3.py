@@ -1,31 +1,33 @@
 #!/usr/bin/env python
 import sys
 import time
+from collections import namedtuple
 from itertools import cycle
 
 input_file = sys.argv[1]
+Rectangle = namedtuple('Rectangle', 'id xmin xmax ymin ymax')
 
-id_data = []
+rectangles = []
 grid_occurrences = {}
 with open(input_file) as file:
     for line in file.readlines():
-        this_id = {}
-        this_id['id'] = int(line.split(" @ ")[0][1:])
-        this_id['xloc'] = int(line.split(",")[0].split(" @ ")[1])
-        this_id['yloc'] = int(line.split(",")[1].split(": ")[0])
-        this_id['xsize'] = int(line.split("x")[0].split(": ")[1])
-        this_id['ysize'] = int(line.split("x")[1])
-        id_data.append(this_id)
+        idnum = int(line.split(" @ ")[0][1:])
+        xloc = int(line.split(",")[0].split(" @ ")[1])
+        yloc = int(line.split(",")[1].split(": ")[0])
+        xsize = int(line.split("x")[0].split(": ")[1])
+        ysize = int(line.split("x")[1])
+
+        this_rect = Rectangle(idnum, xloc, xloc + xsize, yloc, yloc + ysize)
+        rectangles.append(this_rect)
 
 # Part 1
 
 
-def get_all_tuples(xloc, yloc, xsize, ysize):
-    all_tuples = []
-    for dx in range(xsize):
-        for dy in range(ysize):
-            all_tuples.append((xloc+dx, yloc+dy))
-    return all_tuples
+def area(a, b):  # returns None if rectangles don't intersect
+    dx = min(a.xmax, b.xmax) - max(a.xmin, b.xmin)
+    dy = min(a.ymax, b.ymax) - max(a.ymin, b.ymin)
+    if (dx >= 0) and (dy >= 0):
+        return dx*dy
 
 
 def part1():
@@ -77,5 +79,7 @@ def part2():
     return uncollided_id, end-start
 
 
-print("    Part 1 : {}".format(part1()))
-print("    Part 2 : {}".format(part2()))
+p1answer, p1time = part1()
+p2answer, p2time = part2()
+print("    Part 1 : {}\n             {:.5f}s".format(p1answer, p1time))
+print("    Part 2 : {}\n             {:.5f}s".format(p2answer, p2time))

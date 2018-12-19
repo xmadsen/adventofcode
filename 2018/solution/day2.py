@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import time
 from itertools import cycle, combinations
 
 input_file = sys.argv[1]
@@ -16,10 +17,11 @@ def hasXofanyletter(id, x):
 
 
 def part1():
+    start = time.time()
     two_counts = sum([hasXofanyletter(value, 2) for value in input_values])
     three_counts = sum([hasXofanyletter(value, 3) for value in input_values])
-
-    return two_counts * three_counts
+    end = time.time()
+    return two_counts * three_counts, end-start
 
 # Part 2
 
@@ -48,10 +50,14 @@ def letter_diff_count(id1, id2):
 
 
 def part2():
+    start = time.time()
     matching_letters = sorted([letter_diff_count(id1, id2)
                                for id1, id2 in combinations(input_values, 2)])[-1]
-    return matching_letters
+    end = time.time()
+    return matching_letters, end-start
 
 
-print("    Part 1 : {}".format(part1()))
-print("    Part 2 : {}".format(part2()))
+p1answer, p1time = part1()
+p2answer, p2time = part2()
+print("    Part 1 : {}\n             {:.5f}s".format(p1answer, p1time))
+print("    Part 2 : {}\n             {:.5f}s".format(p2answer, p2time))

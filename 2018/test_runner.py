@@ -10,7 +10,7 @@ solutions = sorted([path + "/solution/" +
 print("======================================")
 for day, (solution, input) in enumerate(zip(solutions, inputs)):
     print("Day {}".format(day + 1))
-    call(["/usr/bin/env", "python", solution, input])
-    if day + 1 != len(solutions):
+    call(["/usr/bin/env", "python3", solution, input])
+    if day != len(solutions):
         print("--------------------------------------")
 print("======================================")
