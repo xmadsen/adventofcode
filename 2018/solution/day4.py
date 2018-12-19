@@ -42,6 +42,7 @@ def part1():
             if "wakes up" in event[1] or "falls asleep" in event[1]:
                 guard_schedules[guardid].append(event[0])
 
+    global guard_asleeptimes
     guard_asleeptimes = {}
     for guard, times in guard_schedules.items():
         guard_asleeptimes[guard] = {minute: 0 for minute in range(0, 60)}
@@ -67,7 +68,19 @@ def part1():
 
 
 def part2():
-    return 1, 1
+    global guard_asleeptimes
+    maxcount = 0
+    maxid = 0
+    maxminute = 0
+    for guard, minutes in guard_asleeptimes.items():
+        most_slept_minute = max(minutes, key=minutes.get)
+        count = max(minutes.values())
+        if count > maxcount:
+            maxcount = count
+            maxid = guard
+            maxminute = most_slept_minute
+    result = maxid * maxminute
+    return result, 1
 
 
 p1answer, p1time = part1()
