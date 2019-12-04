@@ -31,7 +31,7 @@ def part1():
         for trajectory in wire:
             direction = trajectory[0]
             distance = int(trajectory[1:])
-            print(vector_for_line(direction, distance))
+            #print(vector_for_line(direction, distance))
     # Part 2
 
 
