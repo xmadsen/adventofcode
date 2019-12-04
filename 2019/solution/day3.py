@@ -23,8 +23,7 @@ def vector_for_line(direction, distance):
 
 def part1():
     #    central_point = [0, 0]
-    wire_paths = [['R75', 'D30', 'R83', 'U83', 'L12', 'D49', 'R71', 'U7'],
-                  ['L72', 'U62', 'R66', 'U55', 'R34', 'D71', 'R55', 'D58', 'R83']]
+   #               ['L72', 'U62', 'R66', 'U55', 'R34', 'D71', 'R55', 'D58', 'R83']]
     all_line_segments = []
     for wire in wire_paths:
         print("=---Wire---=")
