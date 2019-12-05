@@ -21,23 +21,11 @@ def vector_for_line(direction, distance):
     return [distance * i for i in dirs[direction]]
 
 
-def points_to_range(line_segment):
-    x1, y1 = line_segment[0]
-    x2, y2 = line_segment[1]
-
-    if x1 == x2:
-        return {"x": x1, "y": [y1, y2]}
-    else:
-        return {"x": [x1, x2], "y": y1}
-
-
 def part1():
-    #    central_point = [0, 0]
-   #               ['L72', 'U62', 'R66', 'U55', 'R34', 'D71', 'R55', 'D58', 'R83']]
-    all_line_segments = {}
+    wire_points = []
+
     for i, wire in enumerate(wire_paths):
-        all_line_segments[i] = []
-        print("=---Wire---=")
+        wire_points.append([])
         curr_position = [0, 0]
         old_position = curr_position
         for trajectory in wire:
@@ -46,12 +34,27 @@ def part1():
             vector = vector_for_line(direction, distance)
             curr_position = [curr_position[0] +
                              vector[0], curr_position[1] + vector[1]]
-            curr_segment = [old_position, curr_position]
-            all_line_segments[i].append(points_to_range(curr_segment))
+            if old_position[0] == curr_position[0]:
+                for y in range(sorted([old_position[1], curr_position[1]])[0],
+                               sorted([old_position[1], curr_position[1]])[1]+1):
+                    point = (old_position[0], y)
+                    wire_points[i].append(point)
+            if old_position[1] == curr_position[1]:
+                for x in range(sorted([old_position[0], curr_position[0]])[0],
+                               sorted([old_position[0], curr_position[0]])[1]+1):
+                    point = (x, old_position[1])
+                    wire_points[i].append(point)
             old_position = curr_position
-    print(all_line_segments)
+
+    unique_crossed_points = list(set(wire_points[0]) & set((wire_points[1])))
+    manhattan_distances = list(
+        map(lambda x: abs(x[0]) + abs(x[1]), unique_crossed_points))
+    manhattan_distances.remove(0)
+
+    return min(manhattan_distances)
 
     # Part 2
+
 
     # def part2():
 print("    Part 1 : {}".format(part1()))
