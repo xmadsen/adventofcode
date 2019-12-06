@@ -36,19 +36,26 @@ def get_unique_crossed_points():
             curr_position = [curr_position[0] +
                              vector[0], curr_position[1] + vector[1]]
             if old_position[0] == curr_position[0]:
-                for y in range(sorted([old_position[1], curr_position[1]])[0],
-                               sorted([old_position[1], curr_position[1]])[1]+1):
+                if curr_position[1] > old_position[1]:
+                    step = 1
+                else:
+                    step = -1
+                for y in range([old_position[1], curr_position[1]][0],
+                               [old_position[1], curr_position[1]][1], step):
                     point = (old_position[0], y)
                     wire_points[i].append(point)
+
             if old_position[1] == curr_position[1]:
-                for x in range(sorted([old_position[0], curr_position[0]])[0],
-                               sorted([old_position[0], curr_position[0]])[1]+1):
+                if curr_position[0] > old_position[0]:
+                    step = 1
+                else:
+                    step = -1
+                for x in range([old_position[0], curr_position[0]][0],
+                               [old_position[0], curr_position[0]][1], step):
                     point = (x, old_position[1])
                     wire_points[i].append(point)
+
             old_position = curr_position
-        print(wire_points[i][30:40])
-    # print(wire_points[0][:10])
-    # print(wire_points[1][:10])
     unique_crossed_points = list(set(wire_points[0]) & set((wire_points[1])))
     unique_crossed_points.remove((0, 0))
 
