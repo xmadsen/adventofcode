@@ -21,6 +21,7 @@ def vector_for_line(direction, distance):
     return [distance * i for i in dirs[direction]]
 
 
+
 def get_unique_crossed_points():
     wire_points = []
 
@@ -28,6 +29,7 @@ def get_unique_crossed_points():
         wire_points.append([])
         curr_position = [0, 0]
         old_position = curr_position
+
         for trajectory in wire:
 
             direction = trajectory[0]
@@ -68,6 +70,7 @@ def part1():
         map(lambda x: abs(x[0]) + abs(x[1]), unique_crossed_points))
 
     return min(manhattan_distances)
+
 
     # Part 2
 

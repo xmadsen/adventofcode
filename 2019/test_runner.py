@@ -3,7 +3,8 @@ from subprocess import call
 
 path = os.getcwd()
 
-inputs = sorted([path + "/input/" + file for file in os.listdir("input")])
+inputs = sorted(
+    [path + "/input/" + file for file in os.listdir("input") if "DS_Store" not in file])
 solutions = sorted([path + "/solution/" +
                     file for file in os.listdir("solution") if "x" not in file])
 
