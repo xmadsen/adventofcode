@@ -21,7 +21,7 @@ def vector_for_line(direction, distance):
     return [distance * i for i in dirs[direction]]
 
 
-def part1():
+def get_unique_crossed_points():
     wire_points = []
 
     for i, wire in enumerate(wire_paths):
@@ -29,6 +29,7 @@ def part1():
         curr_position = [0, 0]
         old_position = curr_position
         for trajectory in wire:
+
             direction = trajectory[0]
             distance = int(trajectory[1:])
             vector = vector_for_line(direction, distance)
@@ -45,17 +46,36 @@ def part1():
                     point = (x, old_position[1])
                     wire_points[i].append(point)
             old_position = curr_position
-
+        print(wire_points[i][30:40])
+    # print(wire_points[0][:10])
+    # print(wire_points[1][:10])
     unique_crossed_points = list(set(wire_points[0]) & set((wire_points[1])))
+    unique_crossed_points.remove((0, 0))
+
+    return unique_crossed_points, wire_points
+
+
+def part1():
+    unique_crossed_points, _ = get_unique_crossed_points()
     manhattan_distances = list(
         map(lambda x: abs(x[0]) + abs(x[1]), unique_crossed_points))
-    manhattan_distances.remove(0)
 
     return min(manhattan_distances)
 
     # Part 2
 
 
-    # def part2():
+def part2():
+    unique_crossed_points, wire_points = get_unique_crossed_points()
+
+    steps_for_point = {}
+    for point in unique_crossed_points:
+        steps_for_point[point] = 0
+        for wire in wire_points:
+            # print(wire[:10])
+            steps_for_point[point] += wire.index(point)
+    return min(steps_for_point.values())
+
+
 print("    Part 1 : {}".format(part1()))
-# print("    Part 2 : {}".format(part2())
+print("    Part 2 : {}".format(part2()))
