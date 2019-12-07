@@ -27,14 +27,17 @@ def get_param_values(intcode, pointer, param_modes):
         try:
             values.append(intcode[pointer + i + 1] if param_modes[i]
                           == 1 else intcode[intcode[pointer + i + 1]])
-        except Exception as e:
-            print(e)
+        except:
+            pass
     return values
 
 
 def part1(input, part2=False):
     output = []
     intcode = list(map(int, input_values))
+    intcode = [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+               1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+               999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]
     pointer = 0
     while pointer in range(len(intcode)):
         instruction = intcode[pointer]
@@ -57,9 +60,6 @@ def part1(input, part2=False):
             output = values[0]
             pointer += 2
         elif part2:
-            print("Got to Part 2")
-            if opcode == '00225':
-                print(intcode[:pointer])
             if opcode == 5:
                 print(intcode[pointer:pointer+3])
                 if values[0] != 0:
@@ -90,5 +90,5 @@ def part1(input, part2=False):
                 pointer += 4
 
 
-print("    Part 1 : {}".format(part1(input=1)))
-#print("    Part 2 : {}".format(part1(input=5, part2=True)))
+#print("    Part 1 : {}".format(part1(input=1)))
+print("    Part 2 : {}".format(part1(input=9, part2=True)))
