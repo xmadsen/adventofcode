@@ -14,13 +14,6 @@ with open(input_file) as file:
 # Part 1
 
 
-def get_direct_orbits(planet):
-    if planet != "COM":
-        return 1
-    else:
-        return 0
-
-
 def map_orbits(planet, curr_depth):
     global orbit_inputs
     # see if planet has any child orbiters
@@ -45,9 +38,6 @@ orbits = map_orbits(com_orbit[0], curr_depth=0)
 def part1():
     all_objects = list(
         set([obj for sublist in orbit_inputs for obj in sublist]))
-    print(all_objects)
-    # print(get_depth_of_orbit("COM", "B"))
-    print(indirect_orbits)
     sum_indirect_orbits = sum(indirect_orbits.values())
 
     return sum_indirect_orbits

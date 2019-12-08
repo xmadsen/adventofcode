@@ -26,7 +26,6 @@ def part1():
    #               ['L72', 'U62', 'R66', 'U55', 'R34', 'D71', 'R55', 'D58', 'R83']]
     all_line_segments = []
     for wire in wire_paths:
-        print("=---Wire---=")
         for trajectory in wire:
             direction = trajectory[0]
             distance = int(trajectory[1:])
