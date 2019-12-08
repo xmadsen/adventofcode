@@ -22,26 +22,25 @@ def map_orbits(planet, curr_depth):
         children_orbits = []
         for child in children:
             children_orbits.append(map_orbits(child, curr_depth+1))
-        indirect_orbits[planet] = curr_depth
+        direct_and_indirect_orbits[planet] = curr_depth
         return {planet: children_orbits}
     else:
-        indirect_orbits[planet] = curr_depth
+        direct_and_indirect_orbits[planet] = curr_depth
         return {planet: None}
 
 
 orbits = {}
-indirect_orbits = {}
+direct_and_indirect_orbits = {}
 com_orbit = [orbit for orbit in orbit_inputs if orbit[0] == "COM"][0]
 orbits = map_orbits(com_orbit[0], curr_depth=0)
 
 
 def part1():
-    all_objects = list(
-        set([obj for sublist in orbit_inputs for obj in sublist]))
-    sum_indirect_orbits = sum(indirect_orbits.values())
+    return sum(direct_and_indirect_orbits.values())
 
-    return sum_indirect_orbits
+
+# def part2():
 
 
 print("    Part 1 : {}".format(part1()))
-# print("    Part 2 : {}".format(part2()))
+#print("    Part 2 : {}".format(part2()))
