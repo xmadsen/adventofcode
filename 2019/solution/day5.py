@@ -24,21 +24,25 @@ def parse_instruction(instruction):
 def get_param_values(intcode, pointer, param_modes):
     values = []
     # print(param_modes)
+    print("Given pointer {} and param_modes {},".format(pointer, param_modes))
     for i in range(len(param_modes)):
         try:
             values.append(intcode[pointer + i + 1] if param_modes[i]
                           == 1 else intcode[intcode[pointer + i + 1]])
-        except Exception as e:
-            print(e)
+        except:
+            pass
+      #      print(e)
+    print("  the potential values are {}".format(values))
+
     return values
 
 
 def part1(input, part2=False):
     output = []
-    intcode = list(map(int, input_values))
-   # intcode = [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
-    #          1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
-    #          999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]
+    # intcode = list(map(int, input_values))
+    intcode = [3, 21, 1008, 21, 8, 20, 1005, 20, 22, 107, 8, 21, 20, 1006, 20, 31,
+               1106, 0, 36, 98, 0, 0, 1002, 21, 125, 20, 4, 20, 1105, 1, 46, 104,
+               999, 1105, 1, 46, 1101, 1000, 1, 20, 4, 20, 1105, 1, 46, 98, 99]
     pointer = 0
     while pointer in range(len(intcode)):
         instruction = intcode[pointer]
@@ -55,6 +59,7 @@ def part1(input, part2=False):
             intcode[intcode[pointer + 3]] = values[0] * values[1]
             pointer += 4
         elif opcode == 3:
+            print("Opcode equals 3, using input value {}".format(input))
             intcode[intcode[pointer + 1]] = input
             pointer += 2
         elif opcode == 4:
@@ -64,6 +69,8 @@ def part1(input, part2=False):
             if opcode == 5:
                 # print(intcode[pointer:pointer+3])
                 if values[0] != 0:
+                    print("Value {} is not equal to 0, so jumping to {}".format(
+                        values[0], values[1]))
                     pointer = values[1]
                 else:
                     pointer += 3
@@ -72,12 +79,16 @@ def part1(input, part2=False):
 
             elif opcode == 6:
                 if values[0] == 0:
+                    print("Value {} is equal to 0, so jumping to {}".format(
+                        values[0], values[1]))
                     pointer = values[1]
                 else:
                     pointer += 3
 
             elif opcode == 7:
                 if values[0] < values[1]:
+                    print("Value {} is less than {}, so jumping to {}".format(
+                        values[0], values[1], values[2]))
                     intcode[values[2]] = 1
                 else:
                     intcode[values[2]] = 0
@@ -85,13 +96,15 @@ def part1(input, part2=False):
 
             elif opcode == 8:
                 if values[0] == values[1]:
+                    print("Value {} iequals {}, so jumping to {}".format(
+                        values[0], values[1], values[2]))
                     intcode[values[2]] = 1
                 else:
                     intcode[values[2]] = 0
                 pointer += 4
 
 
-print("    Part 1 : {}".format(part1(input=1)))
+# print("    Part 1 : {}".format(part1(input=1)))
 print("    Part 2 : {}".format(part1(input=5, part2=True)))
-#print("    Part 2 : {}".format(part1(input=8, part2=True)))
-#print("    Part 2 : {}".format(part1(input=9, part2=True)))
+print("    Part 2 : {}".format(part1(input=8, part2=True)))
+print("    Part 2 : {}".format(part1(input=9, part2=True)))
