@@ -21,7 +21,6 @@ def part1(width, height):
              for i in range(0, len(input_values), layer_size)][:-1]
 
     num_counts = {}
-    # return len(image)
     min0_layer = None
 
     for i, layer in enumerate(image):
@@ -39,5 +38,42 @@ def part1(width, height):
     return min0_layer['1'] * min0_layer['2']
 
 
+def consolidate_pixels(layered_pixels):
+    for pixel in layered_pixels:
+        if pixel == '0' or pixel == '1':
+            return pixel
+        else:
+            continue
+
+
+def part2(width, height):
+
+    layer_size = width * height
+
+    image = [list(input_values[i:i+layer_size])
+             for i in range(0, len(input_values), layer_size)][:-1]
+
+    image_shaped_layers = []
+    for i, layer in enumerate(image):
+        image_shaped_layers.append([layer[i:i+width]
+                                    for i in range(0, len(layer), width)])
+
+    final_image = []
+    for i in range(height):
+        final_image.append([])
+        for j in range(width):
+            all_layers_ij = [layer[i][j] for layer in image_shaped_layers]
+            pixel = consolidate_pixels(all_layers_ij)
+            final_image[i].append(pixel)
+            if pixel == '0':
+                print("▓", end='')
+            else:
+                print("░", end='')
+            #print(final_image[i][j], end="")
+        print()
+
+    return   # final_image
+
+
 print("    Part 1 : {}".format(part1(width=25, height=6)))
-# print("    Part 2 : {}".format(part2()))
+print("    Part 2 : {}".format(part2(width=25, height=6)))
