@@ -1,5 +1,4 @@
 from solution import Solution
-from util.day_setup import get_input_data
 from functools import reduce
 import re
 
@@ -162,11 +161,66 @@ class Day4(Solution):
                    for key, value in passport.items())
 
 
+class Day5(Solution):
+
+    def part1(self):
+        return max(self.get_seat_ids())
+
+    def part2(self):
+        ids = self.get_seat_ids()
+
+        for i, seat_id in enumerate(ids):
+            temp_ids = ids[i:]
+            near_id = next(near_id for near_id in temp_ids
+                           if abs(seat_id - near_id) == 2)
+            if near_id:
+                if (seat_id + near_ids[0]) // 2 not in ids:
+                    return (seat_id + near_ids[0]) // 2
+
+    def get_seat_locs(self):
+        seats = self.data
+        locs = []
+        for seat in seats:
+            print(seat)
+            locs.append(self.get_seat_loc(seat))
+        return locs
+
+    def get_seat_loc(self, seat):
+        row = seat[:7]
+        curr_range = list(range(128))
+        for char in row:
+            curr_range = self.get_new_range(curr_range, char)
+        row_num = curr_range[0]
+
+        col = seat[7:]
+        curr_range = list(range(8))
+        for char in col:
+            curr_range = self.get_new_range(curr_range, char)
+        col_num = curr_range[0]
+        return (row_num, col_num)
+
+    def get_new_range(self, old_range, new_half):
+        if new_half in ['F', 'L']:
+            new_range = old_range[:(len(old_range) // 2)]
+        elif new_half in ['B', 'R']:
+            new_range = old_range[(len(old_range) // 2):]
+        return new_range
+
+    def get_seat_ids(self):
+        ids = [self.get_seat_id(loc) for loc
+               in self.get_seat_locs()]
+        return ids
+
+    def get_seat_id(self, seat_loc):
+        return seat_loc[0] * 8 + seat_loc[1]
+
+
 if __name__ == '__main__':
     days = [
         Day1(year=2020, day=1, input_as_ints=True),
         Day2(year=2020, day=2),
         Day3(year=2020, day=3),
-        Day4(year=2020, day=4, delimiter='\n\n')]
+        Day4(year=2020, day=4, delimiter='\n\n'),
+        Day5(year=2020, day=5)]
     for day in days:
         print(day)
