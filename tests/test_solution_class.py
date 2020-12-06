@@ -1,6 +1,5 @@
 from solution import Solution
 from pytest import fixture
-from util.day_setup import get_input_data
 
 from AOC_2020 import Day1 as TestYear2020Day1
 

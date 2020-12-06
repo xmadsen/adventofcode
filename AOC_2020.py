@@ -171,17 +171,18 @@ class Day5(Solution):
 
         for i, seat_id in enumerate(ids):
             temp_ids = ids[i:]
-            near_id = next(near_id for near_id in temp_ids
-                           if abs(seat_id - near_id) == 2)
-            if near_id:
-                if (seat_id + near_ids[0]) // 2 not in ids:
-                    return (seat_id + near_ids[0]) // 2
+            try:
+                near_id = next(near_id for near_id in temp_ids
+                               if abs(seat_id - near_id) == 2)
+                if (seat_id + near_id) // 2 not in ids:
+                    return (seat_id + near_id) // 2
+            except StopIteration:
+                pass
 
     def get_seat_locs(self):
         seats = self.data
         locs = []
         for seat in seats:
-            print(seat)
             locs.append(self.get_seat_loc(seat))
         return locs
 
@@ -215,12 +216,39 @@ class Day5(Solution):
         return seat_loc[0] * 8 + seat_loc[1]
 
 
+class Day6(Solution):
+
+    def part1(self):
+        groups = [group.split('\n') for group in self.data]
+
+        question_results = sum([self.get_unique_chars(group)
+                                for group in groups])
+        return question_results
+
+    def part2(self):
+        groups = [group.split('\n') for group in self.data]
+
+        yes_results = sum(
+            [self.get_shared_chars(group) for group in groups]
+        )
+        return yes_results
+
+    def get_unique_chars(self, group):
+        return len(set(''.join(group)))
+
+    def get_shared_chars(self, group):
+        shared_chars = reduce(lambda x, y: set(x) & set(y), group)
+
+        return len(shared_chars)
+
+
 if __name__ == '__main__':
     days = [
         Day1(year=2020, day=1, input_as_ints=True),
         Day2(year=2020, day=2),
         Day3(year=2020, day=3),
         Day4(year=2020, day=4, delimiter='\n\n'),
-        Day5(year=2020, day=5)]
+        Day5(year=2020, day=5),
+        Day6(year=2020, day=6, delimiter='\n\n')]
     for day in days:
         print(day)
