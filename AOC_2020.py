@@ -242,6 +242,61 @@ class Day6(Solution):
         return len(shared_chars)
 
 
+class Day7(Solution):
+    def part1(self):
+        self.bags_rules = self.get_rules()
+        this_bag = 'shiny gold'
+
+        return len(self.get_bags_that_can_contain_this_bag(this_bag))
+
+    def part2(self):
+        self.bags_rules = self.get_rules()
+        this_bag = 'shiny gold'
+
+        return self.get_sum_of_subbags(this_bag)
+
+    def get_rules(self):
+        rules = {}
+        for line in self.data:
+            rules = {**rules,  **self.parse_line(line)}
+        return rules
+
+    def parse_line(self, line):
+        container = line.split(' bags')[0]
+        contents = re.findall('(\d \w+ \w+ bags?)+', line)
+        if not contents:
+            quants = {}
+        else:
+            contents = [re.search('(\d) (\w+ \w+)', content).groups()
+                        for content in contents]
+            quants = {content[1]: int(content[0])
+                      for content in contents if content}
+        return {container: quants}
+
+    def get_bags_that_can_contain_this_bag(self, this_bag):
+        viable_bags = [bag for bag, contents in self.bags_rules.items()
+                       if this_bag in contents]
+        unvisited_bags = [bag for bag, contents in self.bags_rules.items()
+                          if bag not in viable_bags]
+
+        old_len = 0
+        while len(unvisited_bags) != old_len:
+            old_len = len(unvisited_bags)
+            for bag in unvisited_bags:
+                if any([viable_bag in self.bags_rules[bag]
+                        for viable_bag in viable_bags]):
+                    viable_bags.append(bag)
+                    unvisited_bags.remove(bag)
+        return viable_bags
+
+    def get_sum_of_subbags(self, bag):
+        if not self.bags_rules[bag]:
+            return 0
+
+        return sum([quantity + self.get_sum_of_subbags(subbag) * quantity
+                    for subbag, quantity in self.bags_rules[bag].items()])
+
+
 if __name__ == '__main__':
     days = [
         Day1(year=2020, day=1, input_as_ints=True),
@@ -249,6 +304,7 @@ if __name__ == '__main__':
         Day3(year=2020, day=3),
         Day4(year=2020, day=4, delimiter='\n\n'),
         Day5(year=2020, day=5),
-        Day6(year=2020, day=6, delimiter='\n\n')]
+        Day6(year=2020, day=6, delimiter='\n\n'),
+        Day7(year=2020, day=7)]
     for day in days:
         print(day)
