@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import requests
+import timeit
 
 
 class Solution(ABC):
@@ -18,7 +19,12 @@ class Solution(ABC):
         pass
 
     def __str__(self):
-        return('{} - Day {} \n-------------\nPart 1: {}\nPart 2: {}\n============='.format(self.year, self.day, self.part1(), self.part2()))
+        def time_function(func, number_of_times, *args, **kwargs):
+            r = timeit.timeit(func, number=number_of_times)
+            return r / number_of_times
+        part1_time = time_function(self.part1, 3)
+        part2_time = time_function(self.part2, 3)
+        return('{} - Day {} \n-------------\nPart 1: {:10} | {:7.1n} s\nPart 2: {:10} | {:7.1n} s\n============='.format(self.year, self.day, self.part1(), part1_time, self.part2(), part2_time))
 
     def get_input_data(self, as_ints=False):
         url = 'https://adventofcode.com/{}/day/{}/input'.format(
