@@ -1,6 +1,6 @@
 import pytest
 from solutions import day1_2020
-from AOC_2020 import Day5, Day7
+from AOC_2020 import Day5, Day7, Day8
 
 
 def test_day1_part1_example():
@@ -68,3 +68,10 @@ faded blue bags contain no other bags.
 dotted black bags contain no other bags.'''.split("\n")
 
     assert sol.part2() == 32
+
+
+def test_day8_part1_example():
+    sol = Day8(year=2020, day=8)
+    sol.data = 'nop +0\nacc +1\njmp +4\nacc +3\njmp -3\nacc -99\nacc +1\njmp -4\nacc +6'.split(
+        "\n")
+    assert sol.part1() == 5

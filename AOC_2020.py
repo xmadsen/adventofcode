@@ -297,6 +297,51 @@ class Day7(Solution):
                     for subbag, quantity in self.bags_rules[bag].items()])
 
 
+class Day8(Solution):
+    def part1(self):
+        return self.process_boot_code(self.data)
+
+    def part2(self):
+        for i, line in enumerate(self.data):
+            if re.search('[nop|jmp].*', line):
+                this_data = list(self.data)
+                if 'nop' in this_data[i]:
+                    this_data[i] = this_data[i].replace('nop', 'jmp')
+                elif 'jmp' in this_data[i]:
+                    this_data[i] = this_data[i].replace('jmp', 'nop')
+                output = self.process_boot_code(this_data, part2=True)
+                if output[1] is True:
+                    return output[0]
+
+    def process_boot_code(self, code, part2=False):
+        visited_locs = []
+        acc = 0
+        i = 0
+        while i < len(code):
+            line = code[i]
+            command, amount = self.parse_line(line)
+            visited_locs.append(i)
+            if len(list(set(visited_locs))) != len(visited_locs):
+                if part2:
+                    return acc, False
+                return acc
+            if command == 'nop':
+                i += 1
+            elif command == 'acc':
+                acc += amount
+                i += 1
+            elif command == 'jmp':
+                i += amount
+            if i == len(code) - 1:
+                if part2:
+                    return acc, True
+
+    def parse_line(self, line):
+        command = line.split(" ")[0]
+        amount = int(line.split(" ")[1])
+        return command, amount
+
+
 if __name__ == '__main__':
     days = [
         Day1(year=2020, day=1, input_as_ints=True),
@@ -305,6 +350,7 @@ if __name__ == '__main__':
         Day4(year=2020, day=4, delimiter='\n\n'),
         Day5(year=2020, day=5),
         Day6(year=2020, day=6, delimiter='\n\n'),
-        Day7(year=2020, day=7)]
+        Day7(year=2020, day=7),
+        Day8(year=2020, day=8)]
     for day in days:
         print(day)
