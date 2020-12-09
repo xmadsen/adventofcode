@@ -1,5 +1,6 @@
 from solution import Solution
 from functools import reduce
+from itertools import combinations
 import re
 
 
@@ -342,15 +343,48 @@ class Day8(Solution):
         return command, amount
 
 
+class Day9(Solution):
+    def part1(self, preamble=25):
+        self.preamble = preamble
+
+        i = self.preamble
+        while self.property_holds(i):
+            i += 1
+        return self.data[i]
+
+    def part2(self):
+        invalid_num = self.part1()
+        for i in range(len(self.data)):
+            contig = self.contiguous_sum(i, invalid_num)
+            if contig:
+                return min(contig) + max(contig)
+
+    def property_holds(self, i):
+        combos = list(combinations(self.data[(i - self.preamble):i], 2))
+        return any(
+            map(lambda x: x[0] + x[1] == self.data[i], combos))
+
+    def contiguous_sum(self, i, goal_num):
+        contig_range = []
+        while sum(contig_range) < goal_num:
+            contig_range.append(self.data[i])
+            i += 1
+        if sum(contig_range) == goal_num:
+            return contig_range
+        else:
+            return None
+
+
 if __name__ == '__main__':
     days = [
-        Day1(year=2020, day=1, input_as_ints=True),
-        Day2(year=2020, day=2),
-        Day3(year=2020, day=3),
-        Day4(year=2020, day=4, delimiter='\n\n'),
-        Day5(year=2020, day=5),
-        Day6(year=2020, day=6, delimiter='\n\n'),
-        Day7(year=2020, day=7),
-        Day8(year=2020, day=8)]
+        # Day1(year=2020, day=1, input_as_ints=True),
+        # Day2(year=2020, day=2),
+        # Day3(year=2020, day=3),
+        # Day4(year=2020, day=4, delimiter='\n\n'),
+        # Day5(year=2020, day=5),
+        # Day6(year=2020, day=6, delimiter='\n\n'),
+        # Day7(year=2020, day=7),
+        # Day8(year=2020, day=8),
+        Day9(year=2020, day=9, input_as_ints=True)]
     for day in days:
         print(day)

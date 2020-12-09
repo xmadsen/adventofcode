@@ -1,6 +1,6 @@
 import pytest
 from solutions import day1_2020
-from AOC_2020 import Day5, Day7, Day8
+from AOC_2020 import Day5, Day7, Day8, Day9
 
 
 def test_day1_part1_example():
@@ -75,3 +75,11 @@ def test_day8_part1_example():
     sol.data = 'nop +0\nacc +1\njmp +4\nacc +3\njmp -3\nacc -99\nacc +1\njmp -4\nacc +6'.split(
         "\n")
     assert sol.part1() == 5
+
+
+def test_day9_part1_example():
+    sol = Day9(year=2020, day=9, input_as_ints=True)
+    sol.data = [35, 20, 15, 25, 47, 40, 62, 55, 65, 95,
+                102, 117, 150, 182, 127, 219, 299, 277, 309, 576]
+
+    assert sol.part1(preamble=5) == 127
