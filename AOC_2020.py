@@ -375,6 +375,157 @@ class Day9(Solution):
             return None
 
 
+class Day10(Solution):
+    def part1(self):
+        sorted_joltages = sorted(self.data)
+        # joltage_chain = self.get_joltage_chains(
+        #     sorted_joltages[0:1], sorted_joltages[1:])
+        jumps = self.get_joltage_jumps(sorted_joltages)
+        return len(jumps[1]) * len(jumps[3])
+
+    def part2(self):
+        sorted_joltages = sorted(self.data)
+        jumps = self.get_joltage_jumps(sorted_joltages, both_sides=True)
+
+        return self.get_possible_chains(jumps)
+
+    def get_joltage_jumps(self, joltages, both_sides=False):
+        jumps = {3: [joltages[-1] + 3]}
+        for i in range(len(joltages)):
+            if i == 0:
+                jumps[joltages[i]] = [joltages[i]]
+                if both_sides:
+                    jumps[joltages[i]].append(0)
+            elif joltages[i] - joltages[i - 1] not in jumps:
+                jumps[joltages[i] - joltages[i - 1]] = [joltages[i]]
+            else:
+                jumps[joltages[i] - joltages[i - 1]].append(joltages[i])
+                if both_sides:
+                    jumps[joltages[i] - joltages[i - 1]
+                          ].append(joltages[i - 1])
+                    jumps[joltages[i] - joltages[i - 1]
+                          ] = list(set(jumps[joltages[i] - joltages[i - 1]]))
+        return jumps
+
+    def get_possible_chains(self, jumps):
+        multipliers = []
+        last = 0
+        print(jumps[1])
+        print(jumps[3])
+        for jump3 in jumps[3]:
+            print("Checking options for {}".format(jump3))
+            options = [jump for jump in jumps[1]
+                       if jump > last and jump < jump3] + [jump3]
+            print("Options: {}".format(options))
+            mult = len(options)
+            if mult:
+                multipliers.append(mult)
+            last = jump3
+
+        print(multipliers)
+        return reduce(lambda x, y: x * y, multipliers)
+
+
+class Day11(Solution):
+    def part1(self):
+        self.data = [list(row) for row in self.data]
+        seat_rows = [row.copy() for row in self.data]
+        updated_seat_rows = None
+        while seat_rows != updated_seat_rows:
+            if not updated_seat_rows:
+                updated_seat_rows = [row[:] for row in seat_rows]
+            else:
+                seat_rows = [row[:] for row in updated_seat_rows]
+            for j in range(len(seat_rows[0])):
+                for i in range(len(seat_rows)):
+                    occupied = self.get_occupied_adj_seats((i, j), seat_rows)
+                    if seat_rows[i][j] == "L" and len(occupied) == 0:
+                        updated_seat_rows[i][j] = '#'
+                    elif seat_rows[i][j] == "#" and \
+                            len(occupied) >= 4:
+                        updated_seat_rows[i][j] = 'L'
+
+        return sum(row.count('#') for row in updated_seat_rows)
+
+    def part2(self):
+        self.data = [list(row) for row in self.data]
+        seat_rows = [row.copy() for row in self.data]
+        updated_seat_rows = None
+        while seat_rows != updated_seat_rows:
+            if not updated_seat_rows:
+                updated_seat_rows = [row[:] for row in seat_rows]
+            else:
+                seat_rows = [row[:] for row in updated_seat_rows]
+            for j in range(len(seat_rows[0])):
+                for i in range(len(seat_rows)):
+                    occupied = self.get_occupied_visible_seats(
+                        (i, j), seat_rows)
+                    if seat_rows[i][j] == "L" and len(occupied) == 0:
+                        updated_seat_rows[i][j] = '#'
+                    elif seat_rows[i][j] == "#" and \
+                            len(occupied) >= 5:
+                        updated_seat_rows[i][j] = 'L'
+
+        return sum(row.count('#') for row in updated_seat_rows)
+
+    def get_occupied_adj_seats(self, loc, seat_rows):
+        checks = [(loc[0], loc[1] + 1),
+                  (loc[0], loc[1] - 1),
+                  (loc[0] + 1, loc[1]),
+                  (loc[0] - 1, loc[1]),
+                  (loc[0] + 1, loc[1] + 1),
+                  (loc[0] - 1, loc[1] + 1),
+                  (loc[0] + 1, loc[1] - 1),
+                  (loc[0] - 1, loc[1] - 1),
+                  ]
+
+        seats = [check for i, check in enumerate(checks) if
+                 (check[0] in range(len(seat_rows))
+                  and check[1] in range(len(seat_rows[i])))]
+        return [seat for seat in seats if seat_rows[seat[0]][seat[1]] == '#']
+
+    def get_occupied_visible_seats(self, loc, seat_rows):
+        dirs = [(0, 1),
+                (0, -1),
+                (1, 0),
+                (-1, 0),
+                (1, 1),
+                (-1, 1),
+                (1, -1),
+                (-1, -1),
+                ]
+        occupied_visible_seats = []
+
+        for direc in dirs:
+            seat = self.get_next_visible_seat_in_direction(
+                loc, seat_rows, direc)
+            if seat:
+                occupied_visible_seats.append(seat)
+        return occupied_visible_seats
+
+    def get_next_visible_seat_in_direction(self, loc, seat_rows, direc):
+        i = loc[0]
+        j = loc[1]
+        while (i + direc[0] in range(len(seat_rows)) and
+               j + direc[1] in range(len(seat_rows[i]))):
+            i += direc[0]
+            j += direc[1]
+            if seat_rows[i][j] in ['L', '#']:
+                if seat_rows[i][j] == '#':
+                    return (i, j)
+                return None
+
+        return None
+
+
+class Day12(Solution):
+    def part1(self):
+        return 0
+
+    def part2(self):
+        return 0
+
+
 if __name__ == '__main__':
     days = [
         # Day1(year=2020, day=1, input_as_ints=True),
@@ -385,6 +536,10 @@ if __name__ == '__main__':
         # Day6(year=2020, day=6, delimiter='\n\n'),
         # Day7(year=2020, day=7),
         # Day8(year=2020, day=8),
-        Day9(year=2020, day=9, input_as_ints=True)]
+        # Day9(year=2020, day=9, input_as_ints=True),
+        #Day10(year=2020, day=10, input_as_ints=True),
+        #Day11(year=2020, day=11),
+        Day12(year=2020, day=12)
+    ]
     for day in days:
         print(day)
