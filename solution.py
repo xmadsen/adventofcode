@@ -24,7 +24,13 @@ class Solution(ABC):
             return r / number_of_times
         part1_time = time_function(self.part1, 3)
         part2_time = time_function(self.part2, 3)
-        return('{} - Day {} \n-------------\nPart 1: {:10} | {:7.1n} s\nPart 2: {:10} | {:7.1n} s\n============='.format(self.year, self.day, self.part1(), part1_time, self.part2(), part2_time))
+        return '''{} - Day {}
+---------------------------------
+Part 1: {:16} | {:7.1n} s
+Part 2: {:16} | {:7.1n} s
+================================= '''.format(self.year, self.day, self.part1(),
+                                             part1_time, self.part2(),
+                                             part2_time)
 
     def get_input_data(self, as_ints=False):
         url = 'https://adventofcode.com/{}/day/{}/input'.format(

@@ -1,6 +1,6 @@
 import pytest
 from solutions import day1_2020
-from AOC_2020 import Day5, Day7, Day8, Day9, Day10, Day11, Day12
+import AOC_2020
 
 
 def test_day1_part1_example():
@@ -16,7 +16,7 @@ def test_day1_part2_example():
 
 
 def test_day5_get_new_range():
-    sol = Day5(year=2020, day=5)
+    sol = AOC_2020.Day5(year=2020, day=5)
 
     old_range = list(range(128))
     front_half = sol.get_new_range(old_range, 'F')
@@ -27,7 +27,7 @@ def test_day5_get_new_range():
 
 
 def test_day5_part1_example():
-    sol = Day5(year=2020, day=5)
+    sol = AOC_2020.Day5(year=2020, day=5)
     sol.data = ["FBFBBFFRLR",
                 "BFFFBBFRRR",
                 "FFFBBBFRRR",
@@ -41,7 +41,7 @@ def test_day5_part1_example():
 
 
 def test_day7_part1_example():
-    sol = Day7(year=2020, day=7)
+    sol = AOC_2020.Day7(year=2020, day=7)
     sol.data = '''light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
 bright white bags contain 1 shiny gold bag.
@@ -56,7 +56,7 @@ dotted black bags contain no other bags.'''.split("\n")
 
 
 def test_day7_part2_example():
-    sol = Day7(year=2020, day=7)
+    sol = AOC_2020.Day7(year=2020, day=7)
     sol.data = '''light red bags contain 1 bright white bag, 2 muted yellow bags.
 dark orange bags contain 3 bright white bags, 4 muted yellow bags.
 bright white bags contain 1 shiny gold bag.
@@ -71,14 +71,14 @@ dotted black bags contain no other bags.'''.split("\n")
 
 
 def test_day8_part1_example():
-    sol = Day8(year=2020, day=8)
+    sol = AOC_2020.Day8(year=2020, day=8)
     sol.data = 'nop +0\nacc +1\njmp +4\nacc +3\njmp -3\nacc -99\nacc +1\njmp -4\nacc +6'.split(
         "\n")
     assert sol.part1() == 5
 
 
 def test_day9_part1_example():
-    sol = Day9(year=2020, day=9, input_as_ints=True)
+    sol = AOC_2020.Day9(year=2020, day=9, input_as_ints=True)
     sol.data = [35, 20, 15, 25, 47, 40, 62, 55, 65, 95,
                 102, 117, 150, 182, 127, 219, 299, 277, 309, 576]
 
@@ -86,7 +86,7 @@ def test_day9_part1_example():
 
 
 def test_day10_part1_example():
-    sol = Day10(year=2020, day=10, input_as_ints=True)
+    sol = AOC_2020.Day10(year=2020, day=10, input_as_ints=True)
 
     sol.data = [16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4]
 
@@ -99,7 +99,7 @@ def test_day10_part1_example():
 
 
 def test_day10_part2_example():
-    sol = Day10(year=2020, day=10, input_as_ints=True)
+    sol = AOC_2020.Day10(year=2020, day=10, input_as_ints=True)
 
     sol.data = [16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4]
 
@@ -112,7 +112,7 @@ def test_day10_part2_example():
 
 
 def test_day11_part1_example():
-    sol = Day11(year=2020, day=11)
+    sol = AOC_2020.Day11(year=2020, day=11)
 
     sol.data = ["L.LL.LL.LL",
                 "LLLLLLL.LL",
@@ -130,7 +130,7 @@ def test_day11_part1_example():
 
 
 def test_day11_part2_example():
-    sol = Day11(year=2020, day=11)
+    sol = AOC_2020.Day11(year=2020, day=11)
 
     sol.data = ["L.LL.LL.LL",
                 "LLLLLLL.LL",
@@ -148,7 +148,7 @@ def test_day11_part2_example():
 
 
 def test_day12_part1_example():
-    sol = Day12(year=2020, day=12)
+    sol = AOC_2020.Day12(year=2020, day=12)
     sol.data = ['F10',
                 'N3',
                 'F7',
@@ -156,3 +156,69 @@ def test_day12_part1_example():
                 'F11']
 
     assert sol.part1() == 25
+
+
+def test_day12_part2_example():
+    sol = AOC_2020.Day12(year=2020, day=12)
+    sol.data = ['F10',
+                'N3',
+                'F7',
+                'R90',
+                'F11']
+
+    assert sol.part2() == 286
+
+
+def test_day13_part1_example():
+    sol = AOC_2020.Day13(year=2020, day=13)
+    sol.data = ['939',
+                '7,13,x,x,59,x,31,19']
+
+    assert sol.part1() == 295
+
+
+def test_day13_part2_example():
+    sol = AOC_2020.Day13(year=2020, day=13)
+    sol.data = ['939',
+                '17,x,13,19']
+
+    assert sol.part2() == 3417
+    sol.data = ['939',
+                '67,7,59,61']
+
+    assert sol.part2() == 754018
+
+    sol.data = ['939',
+                '67,x,7,59,61']
+
+    assert sol.part2() == 779210
+
+    sol.data = ['939',
+                '67,7,x,59,61']
+
+    assert sol.part2() == 1261476
+
+    sol.data = ['939',
+                '1789,37,47,1889']
+
+    assert sol.part2() == 1202161486
+
+
+def test_day14_part1_example():
+    sol = AOC_2020.Day14(year=2020, day=14)
+    sol.data = ["mask = XXXXXXXXXXXXXXXXXXXXXXXXXXXXX1XXXX0X",
+                "mem[8] = 11",
+                "mem[7] = 101",
+                "mem[8] = 0"]
+
+    assert sol.part1() == 165
+
+
+def test_day14_part2_example():
+    sol = AOC_2020.Day14(year=2020, day=14)
+    sol.data = ["mask = 000000000000000000000000000000X1001X",
+                "mem[42] = 100",
+                "mask = 00000000000000000000000000000000X0XX",
+                "mem[26] = 1"]
+
+    assert sol.part2() == 208

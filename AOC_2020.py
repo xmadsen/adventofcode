@@ -1,6 +1,8 @@
 from solution import Solution
 from functools import reduce
 from itertools import combinations
+import math
+import numpy as np
 import re
 
 
@@ -520,26 +522,226 @@ class Day11(Solution):
 
 class Day12(Solution):
     def part1(self):
-        return 0
+        self.loc = np.array([0, 0])
+        self.facing_vector = np.array([1, 0])
+
+        for instruction in self.data:
+            self.parse_instruction(instruction)
+        return abs(self.loc[0]) + abs(self.loc[1])
+
+    def part2(self):
+        self.waypoint = np.array([10, 1])
+        self.loc = np.array([0, 0])
+        self.facing_vector = np.array([1, 0])
+
+        for instruction in self.data:
+            self.parse_instruction(instruction, part2=True)
+        return abs(self.loc[0]) + abs(self.loc[1])
+
+    def parse_instruction(self, instruction, part2=False):
+        if instruction[0] in 'NESW':
+            if part2:
+                self.waypoint += self.get_movement_vector(instruction)
+                return
+            self.loc += self.get_movement_vector(instruction)
+        elif instruction[0] == 'F':
+            if part2:
+                self.loc += int(instruction[1:]) * self.waypoint
+                return
+            self.loc += int(instruction[1:]) * self.facing_vector
+        else:
+            if part2:
+                self.rotate_waypoint(instruction)
+                return
+            self.facing_vector = self.get_facing_vector(instruction)
+
+    def get_movement_vector(self, instruction):
+        direction_vector = {
+            'N': (0, 1),
+            'E': (1, 0),
+            'S': (0, -1),
+            'W': (-1, 0)
+        }
+        return int(instruction[1:]) \
+            * np.array(direction_vector[instruction[0]])
+
+    def get_facing_vector(self, instruction):
+        direction_vector = [
+            (0, 1),
+            (1, 0),
+            (0, -1),
+            (-1, 0)
+        ]
+
+        curr_vec = direction_vector.index(tuple(self.facing_vector))
+        rotation = int(instruction[1:]) // 90
+        if instruction[0] == 'L':
+            rotation *= -1
+        new_facing_vector = np.array(
+            direction_vector[(curr_vec + rotation) % 4])
+        return new_facing_vector
+
+    def rotate_waypoint(self, instruction):
+        angle = int(instruction[1:])
+
+        if angle == 90:
+            if instruction[0] == 'R':
+                self.waypoint = np.array([self.waypoint[1],
+                                          self.waypoint[0] * -1])
+            elif instruction[0] == 'L':
+                self.waypoint = np.array([self.waypoint[1] * -1,
+                                          self.waypoint[0]])
+        elif angle == 180:
+            self.waypoint = np.array([self.waypoint[0] * -1,
+                                      self.waypoint[1] * -1])
+
+        elif angle == 270:
+            if instruction[0] == 'L':
+                self.waypoint = np.array([self.waypoint[1],
+                                          self.waypoint[0] * -1])
+            elif instruction[0] == 'R':
+                self.waypoint = np.array([self.waypoint[1] * -1,
+                                          self.waypoint[0]])
+
+
+class Day13(Solution):
+    def part1(self):
+        start_time = int(self.data[0])
+        self.buses = [int(bus) for bus in
+                      self.data[1].split(',') if bus != 'x']
+
+        time, bus_id = self.get_time_and_id_of_first_bus(start_time)
+
+        wait_time = time - start_time
+        return wait_time * bus_id
 
     def part2(self):
         return 0
 
+    def get_time_and_id_of_first_bus(self, start_time):
+
+        first_available_time = {bus: self.get_first_time(bus, start_time)
+                                for bus in self.buses}
+
+        min_bus = min(first_available_time, key=first_available_time.get)
+
+        return first_available_time[min_bus], min_bus
+
+    def get_first_time(self, bus, start_time):
+        time = start_time
+        while time % bus != 0:
+            time += 1
+
+        return time
+
+
+class Day14(Solution):
+    def part1(self):
+        self.mask = self.data[0].split(" = ")[1]
+        self.operations = self.data[1:]
+
+        self.memory = {}
+        for op in self.operations:
+            self.process_op(op)
+
+        return sum(self.memory.values())
+
+    def part2(self):
+        self.mask = self.data[0].split(" = ")[1]
+        self.operations = self.data[1:]
+
+        self.memory = {}
+        for op in self.operations:
+            self.process_op_part2(op)
+        return sum(self.memory.values())
+
+    def process_op(self, op):
+        if 'mask' in op:
+            self.mask = op.split(" = ")[1]
+            return
+        dest_address = int(re.findall('\[(\d+)\]\s=', op)[0])
+
+        value_dec = int(''.join(op.split(" = ")[1:]))
+        value_bin = format(value_dec, '036b')
+
+        masked_bin = self.get_masked_bin(value_bin)
+        masked_dec = int(masked_bin, 2)
+
+        self.memory[dest_address] = masked_dec
+
+    def get_masked_bin(self, value_bin):
+        masked_bin = ""
+        for mask, val in zip(self.mask, value_bin):
+            if mask != 'X':
+                masked_bin += mask
+            else:
+                masked_bin += val
+        return masked_bin
+
+    def process_op_part2(self, op):
+        if 'mask' in op:
+            self.mask = op.split(" = ")[1]
+            return
+        address_dec = int(re.findall('\[(\d+)\]\s=', op)[0])
+        addresses = self.get_masked_addresses(address_dec)
+
+        for address in addresses:
+            value = int(op.split(" = ")[1])
+            self.memory[int(address, 2)] = value
+
+    def get_masked_addresses(self, address_dec):
+        addresses = []
+        address_bin = format(address_dec, '036b')
+        address_stubs = []
+        address = ''
+        for mask, val in zip(self.mask, address_bin):
+            if mask == '0':
+                address += val
+            elif mask == '1':
+                address += '1'
+            elif mask == 'X':
+                if address:
+                    address_stubs.append(address)
+                address_stubs.append((0, 1))
+                address = ''
+        if address:
+            address_stubs.append(address)
+        addresses = [address_stubs[0]]
+        for stub in address_stubs[1:]:
+            if stub == (0, 1):
+                addresses = list(set(
+                    [address + "0" if address != (0, 1) else '00' for address in addresses] +
+                    [address + "0" if address != (0, 1) else '10' for address in addresses] +
+                    [address + "1" if address != (0, 1) else '01' for address in addresses] +
+                    [address + "1" if address != (0, 1) else '11' for address in addresses]))
+            else:
+                new_addresses = []
+                for address in addresses:
+                    if address == (0, 1):
+                        new_addresses.extend(['0' + stub, '1' + stub])
+                        continue
+                    new_addresses.append(address + stub)
+                addresses = new_addresses
+
+        return addresses
+
 
 if __name__ == '__main__':
     days = [
-        # Day1(year=2020, day=1, input_as_ints=True),
-        # Day2(year=2020, day=2),
-        # Day3(year=2020, day=3),
-        # Day4(year=2020, day=4, delimiter='\n\n'),
-        # Day5(year=2020, day=5),
-        # Day6(year=2020, day=6, delimiter='\n\n'),
-        # Day7(year=2020, day=7),
-        # Day8(year=2020, day=8),
-        # Day9(year=2020, day=9, input_as_ints=True),
-        #Day10(year=2020, day=10, input_as_ints=True),
-        #Day11(year=2020, day=11),
-        Day12(year=2020, day=12)
+        Day1(year=2020, day=1, input_as_ints=True),
+        Day2(year=2020, day=2),
+        Day3(year=2020, day=3),
+        Day4(year=2020, day=4, delimiter='\n\n'),
+        Day5(year=2020, day=5),
+        Day6(year=2020, day=6, delimiter='\n\n'),
+        Day7(year=2020, day=7),
+        Day8(year=2020, day=8),
+        Day9(year=2020, day=9, input_as_ints=True),
+        Day10(year=2020, day=10, input_as_ints=True),
+        Day11(year=2020, day=11),
+        Day12(year=2020, day=12),
+        Day13(year=2020, day=13),
+        Day14(year=2020, day=14)
     ]
     for day in days:
         print(day)
