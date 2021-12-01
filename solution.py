@@ -25,10 +25,7 @@ class Solution(ABC):
 
         part1_time = time_function(self.part1, 3)
         part2_time = time_function(self.part2, 3)
-        print(part1_time)
-        print(part2_time)
-        print(self.year)
-        print(self.day)
+
         return """
         {} - Day {}
 ---------------------------------
