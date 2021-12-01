@@ -8,16 +8,15 @@ import re
 
 class Day1(Solution):
     def part1(self):
-        # gts = 0
-        # for i, val in enumerate(self.data):
-        #     if i == 0:
-        #         continue
-        #     if val > self.data[i - 1]:
-        #        gts += 1
+        gts = 0
+        for i, val in enumerate(self.data):
+            if i == 0:
+                continue
+            if val > self.data[i - 1]:
+               gts += 1
 
 
-        # return gts
-        return reduce(lambda x, y: x + y, self.data)
+        return gts
 
     def part2(self):
         gts = 0
