@@ -13,8 +13,7 @@ class Day1(Solution):
             if i == 0:
                 continue
             if val > self.data[i - 1]:
-               gts += 1
-
+                gts += 1
 
         return gts
 
@@ -33,12 +32,44 @@ class Day1(Solution):
         return gts
 
     def get_window_sum(self, start, size=3):
-        return sum(self.data[start:start + size])
+        return sum(self.data[start : start + size])
 
 
-if __name__ == '__main__':
-    days = [
-        Day1(year=2021, day=1, input_as_ints=True)
-    ]
+class Day2(Solution):
+    def part1(self):
+        hpos = 0
+        depth = 0
+        for instruction in self.data:
+            direction, amount = instruction.split(" ")
+            amount = int(amount)
+            if direction == "forward":
+                hpos += amount
+            elif direction == "down":
+                depth += amount
+            elif direction == "up":
+                depth -= amount
+
+        return hpos * depth
+
+    def part2(self):
+        aim = 0
+        hpos = 0
+        depth = 0
+        for instruction in self.data:
+            direction, amount = instruction.split(" ")
+            amount = int(amount)
+            if direction == "forward":
+                hpos += amount
+                depth += aim * amount
+            elif direction == "down":
+                aim += amount
+            elif direction == "up":
+                aim -= amount
+
+        return hpos * depth
+
+
+if __name__ == "__main__":
+    days = [Day1(year=2021, day=1, input_as_ints=True), Day2(year=2021, day=2)]
     for day in days:
         print(day)
