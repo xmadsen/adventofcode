@@ -1,9 +1,5 @@
+from collections import Counter
 from solution import Solution
-from functools import reduce
-from itertools import combinations
-import math
-import numpy as np
-import re
 
 
 class Day1(Solution):
@@ -69,7 +65,46 @@ class Day2(Solution):
         return hpos * depth
 
 
+class Day3(Solution):
+    def part1(self):
+        digits = [[x[i] for x in self.data] for i in range(len(self.data[0]))]
+
+        counters = [Counter(x) for x in digits]
+
+        gammarate = int("".join([max(x, key=x.get) for x in counters]), 2)
+        epsilonrate = int("".join([min(x, key=x.get) for x in counters]), 2)
+
+        return gammarate * epsilonrate
+
+    def part2(self):
+        def get_value(kept_numbers, digit_index, func):
+            if len(kept_numbers) == 1:
+                return int(kept_numbers[0], 2)
+
+            counter = Counter([x[digit_index] for x in kept_numbers])
+            maxm = max(counter, key=counter.get)
+            minm = min(counter, key=counter.get)
+            keep_value = str(
+                func(counter, key=counter.get)
+                if counter[maxm] != counter[minm]
+                else int(func == max)
+            )
+            keeping_numbers = [
+                number for number in kept_numbers if number[digit_index] == keep_value
+            ]
+
+            return get_value(keeping_numbers, digit_index + 1, func)
+
+        oxygen_rating = get_value(list(self.data), 0, max)
+        co2_rating = get_value(list(self.data), 0, min)
+        return oxygen_rating * co2_rating
+
+
 if __name__ == "__main__":
-    days = [Day1(year=2021, day=1, input_as_ints=True), Day2(year=2021, day=2)]
+    days = [
+        Day1(year=2021, day=1, input_as_ints=True),
+        Day2(year=2021, day=2),
+        Day3(year=2021, day=3),
+    ]
     for day in days:
         print(day)
