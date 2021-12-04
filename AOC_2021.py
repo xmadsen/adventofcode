@@ -100,11 +100,86 @@ class Day3(Solution):
         return oxygen_rating * co2_rating
 
 
+class Day4(Solution):
+    def part1(self):
+        # need to get numbers (first line)
+        drawn_numbers = self.data[0].split(",")
+        #print("Drawn numbers = {}".format(drawn_numbers))
+        boards = []
+        for row_index in range(2, len(self.data[2:]), 6):
+            board = [
+                self.data[row_index + i].replace("  ", " ").split(" ")
+                for i in range(5)
+            ]
+            board = [list(filter(lambda x: x != '', row)) for row in board]
+            boards.append(board)
+        
+        for i, num in enumerate(drawn_numbers):
+            # update all instances with a * on the end
+            # if i >= 5 check for bingo
+            boards = self.mark_number_on_bingo_boards(num, boards)
+            if i >= 5:
+                print("i = {}".format(i))
+                for board in boards:
+                    if self.board_has_bingo(board):
+                        print("BINGO BOARD FOUND!: {}".format(board))
+                        return self.score(board) * int(num)
+
+
+
+    def part2(self):
+        drawn_numbers = self.data[0].split(",")
+        #print("Drawn numbers = {}".format(drawn_numbers))
+        boards = []
+        for row_index in range(2, len(self.data[2:]), 6):
+            board = [
+                self.data[row_index + i].replace("  ", " ").split(" ")
+                for i in range(5)
+            ]
+            board = [list(filter(lambda x: x != '', row)) for row in board]
+            boards.append(board)
+        
+        bingo_count = 0
+        bingo_board_indices = []
+        for i, num in enumerate(drawn_numbers):
+            # update all instances with a * on the end
+            # if i >= 5 check for bingo
+            boards = self.mark_number_on_bingo_boards(num, boards)
+            
+            if i >= 5:
+                for i, board in enumerate(boards):
+                    if i in bingo_board_indices:
+                        continue
+                    if self.board_has_bingo(board):
+                        bingo_count += 1
+                        bingo_board_indices.append(i)
+                        if len(bingo_board_indices) == len(boards):
+                            return self.score(board) * int(num)
+
+    def mark_number_on_bingo_boards(self, number, boards):
+        new_boards = []
+        for board in boards:
+            new_board = []
+            for row in board:
+                new_board.append(list(map(lambda el: el+"*" if el == number else el, row)))
+            new_boards.append(new_board)
+        return new_boards
+    
+    def board_has_bingo(self, board):
+        cols =  [list(x) for x in zip(*board)]
+        return any(all("*" in num for num in row) for row in board) or any(all("*" in num for num in col) for col in cols)
+
+    def score(self, board):
+        vals = [int(val) for row in board for val in row if "*" not in val]
+        return sum(vals)
+
+
 if __name__ == "__main__":
     days = [
         Day1(year=2021, day=1, input_as_ints=True),
         Day2(year=2021, day=2),
         Day3(year=2021, day=3),
+        Day4(year=2021, day=4)
     ]
     for day in days:
         print(day)
