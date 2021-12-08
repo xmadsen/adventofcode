@@ -104,16 +104,15 @@ class Day4(Solution):
     def part1(self):
         # need to get numbers (first line)
         drawn_numbers = self.data[0].split(",")
-        #print("Drawn numbers = {}".format(drawn_numbers))
+        # print("Drawn numbers = {}".format(drawn_numbers))
         boards = []
         for row_index in range(2, len(self.data[2:]), 6):
             board = [
-                self.data[row_index + i].replace("  ", " ").split(" ")
-                for i in range(5)
+                self.data[row_index + i].replace("  ", " ").split(" ") for i in range(5)
             ]
-            board = [list(filter(lambda x: x != '', row)) for row in board]
+            board = [list(filter(lambda x: x != "", row)) for row in board]
             boards.append(board)
-        
+
         for i, num in enumerate(drawn_numbers):
             # update all instances with a * on the end
             # if i >= 5 check for bingo
@@ -125,27 +124,24 @@ class Day4(Solution):
                         print("BINGO BOARD FOUND!: {}".format(board))
                         return self.score(board) * int(num)
 
-
-
     def part2(self):
         drawn_numbers = self.data[0].split(",")
-        #print("Drawn numbers = {}".format(drawn_numbers))
+        # print("Drawn numbers = {}".format(drawn_numbers))
         boards = []
         for row_index in range(2, len(self.data[2:]), 6):
             board = [
-                self.data[row_index + i].replace("  ", " ").split(" ")
-                for i in range(5)
+                self.data[row_index + i].replace("  ", " ").split(" ") for i in range(5)
             ]
-            board = [list(filter(lambda x: x != '', row)) for row in board]
+            board = [list(filter(lambda x: x != "", row)) for row in board]
             boards.append(board)
-        
+
         bingo_count = 0
         bingo_board_indices = []
         for i, num in enumerate(drawn_numbers):
             # update all instances with a * on the end
             # if i >= 5 check for bingo
             boards = self.mark_number_on_bingo_boards(num, boards)
-            
+
             if i >= 5:
                 for i, board in enumerate(boards):
                     if i in bingo_board_indices:
@@ -161,17 +157,201 @@ class Day4(Solution):
         for board in boards:
             new_board = []
             for row in board:
-                new_board.append(list(map(lambda el: el+"*" if el == number else el, row)))
+                new_board.append(
+                    list(map(lambda el: el + "*" if el == number else el, row))
+                )
             new_boards.append(new_board)
         return new_boards
-    
+
     def board_has_bingo(self, board):
-        cols =  [list(x) for x in zip(*board)]
-        return any(all("*" in num for num in row) for row in board) or any(all("*" in num for num in col) for col in cols)
+        cols = [list(x) for x in zip(*board)]
+        return any(all("*" in num for num in row) for row in board) or any(
+            all("*" in num for num in col) for col in cols
+        )
 
     def score(self, board):
         vals = [int(val) for row in board for val in row if "*" not in val]
         return sum(vals)
+
+
+class Day5(Solution):
+    def part1(self):
+        lines = []
+        for vent in self.data:
+            line = [
+                (int(tupl.split(",")[0]), int(tupl.split(",")[1]))
+                for tupl in vent.split(" -> ")
+            ]
+            lines.append(line)
+
+        points = {}
+        for i, line in enumerate(lines):
+            for next_line in lines[i + 1 :]:
+                if (
+                    next_line[0][0] != next_line[1][0]
+                    and next_line[0][1] != next_line[1][1]
+                ):
+                    continue  # Skip if not horizontal or vertical
+                overlap_pts = self.get_line_intersections(line, next_line)
+
+                for point in overlap_pts:
+                    if point not in points:
+                        points[point] = [line, next_line]
+                    elif line in points[point]:
+                        points[point].append(next_line)
+                    else:
+                        points[point].append(line)
+
+        overlaps = [key for key, value in points.items() if len(value) >= 2]
+        for key, val in points.items():
+            print(key)
+            print("\t{}".format(val))
+        return len(overlaps)
+
+    def part2(self):
+        return 0
+
+    def get_line_intersections(self, line1, line2, no_diags=True):
+        # print("Comparing lines: {} -> {}".format(line1, line2))
+        if self.lines_are_parallel(line1, line2):
+            if self.line_is_horiz(line1) and self.line_is_horiz(line2):
+                # print("Both horizontal")
+                if line1[0][1] == line2[0][1]:  # Same y
+                    # print("Same y value {}".format(line1[0][1]))
+                    smaller_x1 = min(line1[0][0], line1[1][0])
+                    bigger_x1 = max(line1[0][0], line1[1][0])
+
+                    smaller_x2 = min(line2[0][0], line2[1][0])
+                    bigger_x2 = max(line2[0][0], line2[1][0])
+                    print(smaller_x1, bigger_x1)
+                    print(smaller_x2, bigger_x2)
+                    if smaller_x1 in range(
+                        smaller_x2, bigger_x2 + 1
+                    ):  # smaller x1 in range of x2
+                        return sorted(
+                            [
+                                (i, line1[0][1])
+                                for i in range(
+                                    smaller_x1, min(bigger_x1, bigger_x2) + 1
+                                )
+                            ]
+                        )
+                    elif bigger_x1 in range(
+                        smaller_x2, bigger_x2 + 1
+                    ):  # bigger x1 in range of x2
+                        return sorted(
+                            [
+                                (i, line1[0][1])
+                                for i in range(
+                                    max(smaller_x1, smaller_x2), bigger_x1 + 1
+                                )
+                            ]
+                        )
+                    elif smaller_x2 in range(smaller_x1, bigger_x1 + 1):
+                        return sorted(
+                            [
+                                (i, line1[0][1])
+                                for i in range(
+                                    smaller_x2, min(bigger_x2, bigger_x1) + 1
+                                )
+                            ]
+                        )
+                    elif bigger_x2 in range(smaller_x1, bigger_x1 + 1):
+                        return sorted(
+                            [
+                                (i, line1[0][1])
+                                for i in range(
+                                    max(smaller_x1, smaller_x2), bigger_x2 + 1
+                                )
+                            ]
+                        )
+                else:
+                    return []
+            elif self.line_is_vert(line1) and self.line_is_vert(line2):
+                # if same x value, check for overlap
+                if line1[0][0] == line2[0][0]:
+
+                    smaller_y1 = min(line1[0][1], line1[1][1])
+                    bigger_y1 = max(line1[0][1], line1[1][1])
+
+                    smaller_y2 = min(line2[0][1], line2[1][1])
+                    bigger_y2 = max(line2[0][1], line2[1][1])
+                    if smaller_y1 in range(smaller_y2, bigger_y2 + 1):
+                        return sorted(
+                            [
+                                (line1[0][0], i)
+                                for i in range(
+                                    smaller_y1, min(bigger_y1, bigger_y2) + 1
+                                )
+                            ]
+                        )
+                    elif bigger_y1 in range(smaller_y2, bigger_y2 + 1):
+                        return sorted(
+                            [
+                                (line1[0][0], i)
+                                for i in range(
+                                    max(smaller_y1, smaller_y2), bigger_y1 + 1
+                                )
+                            ]
+                        )
+                    if smaller_y2 in range(smaller_y1, bigger_y1 + 1):
+                        return sorted(
+                            [
+                                (line1[0][0], i)
+                                for i in range(
+                                    smaller_y2, min(bigger_y1, bigger_y2) + 1
+                                )
+                            ]
+                        )
+                    elif bigger_y2 in range(smaller_y2, bigger_y2 + 1):
+                        return sorted(
+                            [
+                                (line1[0][0], i)
+                                for i in range(
+                                    max(smaller_y1, smaller_y2), bigger_y2 + 1
+                                )
+                            ]
+                        )
+                else:
+                    return []
+        else:
+            # check for intersection
+            if self.line_is_horiz(line1) and self.line_is_vert(line2):
+                smaller_x1 = min(line1[0][0], line1[1][0])
+                bigger_x1 = max(line1[0][0], line1[1][0])
+                smaller_y2 = min(line2[0][1], line2[1][1])
+                bigger_y2 = max(line2[0][1], line2[1][1])
+                if line1[0][1] in range(smaller_y2, bigger_y2 + 1) and line2[1][
+                    0
+                ] in range(smaller_x1, bigger_x1 + 1):
+                    return [(line2[0][0], line1[0][1])]
+            elif self.line_is_vert(line1) and self.line_is_horiz(line2):
+                smaller_y1 = min(line1[0][1], line1[1][1])
+                bigger_y1 = max(line1[0][1], line1[1][1])
+                smaller_x2 = min(line2[0][0], line2[1][0])
+                bigger_x2 = max(line2[0][0], line2[1][0])
+                if line1[0][0] in range(smaller_x2, bigger_x2 + 1) and line2[0][
+                    1
+                ] in range(smaller_y1, bigger_y1 + 1):
+                    return [(line1[0][0], line2[0][1])]
+                else:
+                    return []
+        return []
+
+    def lines_are_parallel(self, line1, line2):
+        line1_is_horiz = line1[1][1] == line1[0][1]
+        line2_is_horiz = line2[1][1] == line2[0][1]
+
+        line1_is_vert = line1[1][0] == line1[0][0]
+        line2_is_vert = line2[1][0] == line2[0][0]
+
+        return (line1_is_vert and line2_is_vert) or (line1_is_horiz and line2_is_horiz)
+
+    def line_is_horiz(self, line):
+        return line[0][1] == line[1][1]
+
+    def line_is_vert(self, line):
+        return line[0][0] == line[1][0]
 
 
 if __name__ == "__main__":
@@ -179,7 +359,8 @@ if __name__ == "__main__":
         Day1(year=2021, day=1, input_as_ints=True),
         Day2(year=2021, day=2),
         Day3(year=2021, day=3),
-        Day4(year=2021, day=4)
+        Day4(year=2021, day=4),
+        Day5(year=2021, day=5),
     ]
     for day in days:
         print(day)
