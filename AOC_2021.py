@@ -118,10 +118,10 @@ class Day4(Solution):
             # if i >= 5 check for bingo
             boards = self.mark_number_on_bingo_boards(num, boards)
             if i >= 5:
-                print("i = {}".format(i))
+
                 for board in boards:
                     if self.board_has_bingo(board):
-                        print("BINGO BOARD FOUND!: {}".format(board))
+                        # print("BINGO BOARD FOUND!: {}".format(board))
                         return self.score(board) * int(num)
 
     def part2(self):
@@ -203,9 +203,9 @@ class Day5(Solution):
                         points[point].append(line)
 
         overlaps = [key for key, value in points.items() if len(value) >= 2]
-        for key, val in points.items():
-            print(key)
-            print("\t{}".format(val))
+        # for key, val in points.items():
+        #     print(key)
+        #     print("\t{}".format(val))
         return len(overlaps)
 
     def part2(self):
@@ -223,8 +223,8 @@ class Day5(Solution):
 
                     smaller_x2 = min(line2[0][0], line2[1][0])
                     bigger_x2 = max(line2[0][0], line2[1][0])
-                    print(smaller_x1, bigger_x1)
-                    print(smaller_x2, bigger_x2)
+                    # print(smaller_x1, bigger_x1)
+                    # print(smaller_x2, bigger_x2)
                     if smaller_x1 in range(
                         smaller_x2, bigger_x2 + 1
                     ):  # smaller x1 in range of x2
@@ -354,6 +354,30 @@ class Day5(Solution):
         return line[0][0] == line[1][0]
 
 
+class Day6(Solution):
+    def part1(self, days=80):
+        state = [int(fish) for fish in self.data[0].split(",")]
+        state = dict(Counter(state))
+
+        for _ in range(days):
+            state = self.update_state(state)
+        return sum(state.values())
+
+    def part2(self):
+        return self.part1(256)
+
+    def update_state(self, state):
+        new_state = {i: 0 for i in range(8)}
+
+        for key, value in state.items():
+            if key == 0:
+                new_state[6] = value
+                new_state[8] = value
+                continue
+            new_state[key - 1] += value
+        return new_state
+
+
 if __name__ == "__main__":
     days = [
         Day1(year=2021, day=1, input_as_ints=True),
@@ -361,6 +385,7 @@ if __name__ == "__main__":
         Day3(year=2021, day=3),
         Day4(year=2021, day=4),
         Day5(year=2021, day=5),
+        Day6(year=2021, day=6),
     ]
     for day in days:
         print(day)

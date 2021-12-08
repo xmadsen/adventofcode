@@ -23,8 +23,8 @@ class Solution(ABC):
             r = timeit.timeit(func, number=number_of_times)
             return r / number_of_times
 
-        part1_time = time_function(self.part1, 3)
-        part2_time = time_function(self.part2, 3)
+        part1_time = time_function(self.part1, 1)
+        part2_time = time_function(self.part2, 1)
 
         return """
         {} - Day {}
