@@ -107,12 +107,11 @@ class Day4(Solution):
         boards = []
         for row_index in range(2, len(self.data[2:]), 6):
             board = [
-                self.data[row_index + i].replace("  ", " ").split(" ")
-                for i in range(5)
+                self.data[row_index + i].replace("  ", " ").split(" ") for i in range(5)
             ]
-            board = [list(filter(lambda x: x != '', row)) for row in board]
+            board = [list(filter(lambda x: x != "", row)) for row in board]
             boards.append(board)
-        
+
         for i, num in enumerate(drawn_numbers):
             # update all instances with a * on the end
             # if i >= 5 check for bingo
@@ -122,26 +121,23 @@ class Day4(Solution):
                     if self.board_has_bingo(board):
                         return self.score(board) * int(num)
 
-
-
     def part2(self):
         drawn_numbers = self.data[0].split(",")
         boards = []
         for row_index in range(2, len(self.data[2:]), 6):
             board = [
-                self.data[row_index + i].replace("  ", " ").split(" ")
-                for i in range(5)
+                self.data[row_index + i].replace("  ", " ").split(" ") for i in range(5)
             ]
-            board = [list(filter(lambda x: x != '', row)) for row in board]
+            board = [list(filter(lambda x: x != "", row)) for row in board]
             boards.append(board)
-        
+
         bingo_count = 0
         bingo_board_indices = []
         for i, num in enumerate(drawn_numbers):
             # update all instances with a * on the end
             # if i >= 5 check for bingo
             boards = self.mark_number_on_bingo_boards(num, boards)
-            
+
             if i >= 5:
                 for i, board in enumerate(boards):
                     if i in bingo_board_indices:
@@ -157,13 +153,17 @@ class Day4(Solution):
         for board in boards:
             new_board = []
             for row in board:
-                new_board.append(list(map(lambda el: el+"*" if el == number else el, row)))
+                new_board.append(
+                    list(map(lambda el: el + "*" if el == number else el, row))
+                )
             new_boards.append(new_board)
         return new_boards
-    
+
     def board_has_bingo(self, board):
-        cols =  [list(x) for x in zip(*board)]
-        return any(all("*" in num for num in row) for row in board) or any(all("*" in num for num in col) for col in cols)
+        cols = [list(x) for x in zip(*board)]
+        return any(all("*" in num for num in row) for row in board) or any(
+            all("*" in num for num in col) for col in cols
+        )
 
     def score(self, board):
         vals = [int(val) for row in board for val in row if "*" not in val]
@@ -182,13 +182,14 @@ class Day5(Solution):
 3,4 -> 1,4
 0,0 -> 8,8
 5,5 -> 8,2
-""".split("\n")
+""".split(
+            "\n"
+        )
         for line in self.data:
             start, end = (tuple(map(int, val.split(","))) for val in line.split(" -> "))
             print(start)
             print(end)
             return 0
-
 
     def part2(self):
         return 0
@@ -198,34 +199,31 @@ class Day5(Solution):
         # [0, 5]->[0, 9]  .....22----
 
         # intersect in a line - same x or y and collision along other axis
-        # if start1[0] == start2[0] and 
-        # return start1[0] in range 
+        # if start1[0] == start2[0] and
+        # return start1[0] in range
         pass
 
 
 class Day7(Solution):
     def part1(self):
-        nums = list(map(int, self.data[0].split(',')))
-
+        nums = list(map(int, self.data[0].split(",")))
 
         avg = sum(nums) // len(nums) - 1
 
-        test_vals = nums[avg - 100:avg + 100]
+        test_vals = nums[avg - 100 : avg + 100]
 
         sums = [sum(abs(num - test_val) for num in nums) for test_val in test_vals]
-        
-        return min(sums)
 
+        return min(sums)
 
     def part2(self):
         # self.data = ["16,1,2,0,4,2,7,1,2,14"]
-        nums = list(map(int, self.data[0].split(',')))
-        avg = sum(nums) // len(nums) -1
+        nums = list(map(int, self.data[0].split(",")))
+        avg = sum(nums) // len(nums) - 1
 
         sums = []
         for i in range(avg - 100, avg + 100):
-            sums.append(sum(self.get_fuel_cost(num - i)
-                for num in nums))
+            sums.append(sum(self.get_fuel_cost(num - i) for num in nums))
         print(sums)
         return min(sums)
 
@@ -235,6 +233,38 @@ class Day7(Solution):
         fuel_cost = sum(val for val in range(1, abs(dist) + 1))
         return fuel_cost
 
+
+class Day8(Solution):
+    def part1(self):
+        outputs = [
+            len(val) for line in self.data for val in line.split("|")[1].split(" ") if val
+        ]
+
+        return len([val for val in list(map(self.digit_from_length, outputs)) if val])
+
+    def part2(self):
+        return 0
+
+    def digit_from_length(self, length):
+        digits = {2: 1, 3: 7, 4: 4, 7: 8}
+        return digits.get(length, None)
+
+    def get_mapping_from_inputs(self, inputs):
+        
+
+    def digit_from_text(self, mapping, text):
+        digits = { sorted("acedgfb"): 8,
+        sorted("cdfbe"): 5,
+        sorted("gcdfa"): 2,
+        sorted("fbcad"): 3,
+        sorted("dab"): 7,        
+        sorted("cefabd"): 9,
+        sorted("cdfgeb"): 6,
+        sorted("eafb"): 4,
+        sorted("cagedb"): 0,
+        sorted("ab"): 1}
+        return digits.get(sorted(text))
+
 if __name__ == "__main__":
     days = [
         # Day1(year=2021, day=1, input_as_ints=True),
@@ -242,7 +272,8 @@ if __name__ == "__main__":
         # Day3(year=2021, day=3),
         # Day4(year=2021, day=4)
         # Day5(year=2021, day=5),
-        Day7(year=2021, day=7)
+        # Day7(year=2021, day=7),
+        Day8(year=2021, day=8)
     ]
     for day in days:
         print(day)
