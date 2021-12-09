@@ -104,7 +104,6 @@ class Day4(Solution):
     def part1(self):
         # need to get numbers (first line)
         drawn_numbers = self.data[0].split(",")
-        #print("Drawn numbers = {}".format(drawn_numbers))
         boards = []
         for row_index in range(2, len(self.data[2:]), 6):
             board = [
@@ -119,17 +118,14 @@ class Day4(Solution):
             # if i >= 5 check for bingo
             boards = self.mark_number_on_bingo_boards(num, boards)
             if i >= 5:
-                print("i = {}".format(i))
                 for board in boards:
                     if self.board_has_bingo(board):
-                        print("BINGO BOARD FOUND!: {}".format(board))
                         return self.score(board) * int(num)
 
 
 
     def part2(self):
         drawn_numbers = self.data[0].split(",")
-        #print("Drawn numbers = {}".format(drawn_numbers))
         boards = []
         for row_index in range(2, len(self.data[2:]), 6):
             board = [
@@ -174,12 +170,79 @@ class Day4(Solution):
         return sum(vals)
 
 
+class Day5(Solution):
+    def part1(self):
+        self.data = """0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2
+""".split("\n")
+        for line in self.data:
+            start, end = (tuple(map(int, val.split(","))) for val in line.split(" -> "))
+            print(start)
+            print(end)
+            return 0
+
+
+    def part2(self):
+        return 0
+
+    def get_intersection_points(self, line1, line2, no_diag):
+        # [0, 2] -> [0, 6]
+        # [0, 5]->[0, 9]  .....22----
+
+        # intersect in a line - same x or y and collision along other axis
+        # if start1[0] == start2[0] and 
+        # return start1[0] in range 
+        pass
+
+
+class Day7(Solution):
+    def part1(self):
+        nums = list(map(int, self.data[0].split(',')))
+
+
+        avg = sum(nums) // len(nums) - 1
+
+        test_vals = nums[avg - 100:avg + 100]
+
+        sums = [sum(abs(num - test_val) for num in nums) for test_val in test_vals]
+        
+        return min(sums)
+
+
+    def part2(self):
+        # self.data = ["16,1,2,0,4,2,7,1,2,14"]
+        nums = list(map(int, self.data[0].split(',')))
+        avg = sum(nums) // len(nums) -1
+
+        sums = []
+        for i in range(avg - 100, avg + 100):
+            sums.append(sum(self.get_fuel_cost(num - i)
+                for num in nums))
+        print(sums)
+        return min(sums)
+
+    def get_fuel_cost(self, dist):
+        if dist == 0:
+            return 0
+        fuel_cost = sum(val for val in range(1, abs(dist) + 1))
+        return fuel_cost
+
 if __name__ == "__main__":
     days = [
-        Day1(year=2021, day=1, input_as_ints=True),
-        Day2(year=2021, day=2),
-        Day3(year=2021, day=3),
-        Day4(year=2021, day=4)
+        # Day1(year=2021, day=1, input_as_ints=True),
+        # Day2(year=2021, day=2),
+        # Day3(year=2021, day=3),
+        # Day4(year=2021, day=4)
+        # Day5(year=2021, day=5),
+        Day7(year=2021, day=7)
     ]
     for day in days:
         print(day)
