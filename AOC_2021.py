@@ -1,4 +1,9 @@
 from collections import Counter
+from curses import flash
+from typing import List
+
+from requests.models import requote_uri
+
 from solution import Solution
 
 
@@ -237,7 +242,10 @@ class Day7(Solution):
 class Day8(Solution):
     def part1(self):
         outputs = [
-            len(val) for line in self.data for val in line.split("|")[1].split(" ") if val
+            len(val)
+            for line in self.data
+            for val in line.split("|")[1].split(" ")
+            if val
         ]
 
         return len([val for val in list(map(self.digit_from_length, outputs)) if val])
@@ -250,20 +258,286 @@ class Day8(Solution):
         return digits.get(length, None)
 
     def get_mapping_from_inputs(self, inputs):
-        
+        possibilities = {i: [] for i in range(7)}
+        while any(len(possibility) > 1 for possibility in possibilities):
+            for input in inputs:
+                if len(input) == 2:
+                    possibilities[2].extend(list(input))
+                    possibilities[5].extend(list(input))
+                elif len(input) == 3:
+                    if (
+                        len(
+                            val in [possibilities[2], possibilities[5]] for val in input
+                        )
+                        >= 2
+                    ):
+                        possibilities[0].append(
+                            list(
+                                filter(
+                                    lambda x: x
+                                    not in [possibilities[2], possibilities[5]],
+                                    input,
+                                )
+                            )
+                        )
+                        possibilities[5].extend(list(input))
 
     def digit_from_text(self, mapping, text):
-        digits = { sorted("acedgfb"): 8,
-        sorted("cdfbe"): 5,
-        sorted("gcdfa"): 2,
-        sorted("fbcad"): 3,
-        sorted("dab"): 7,        
-        sorted("cefabd"): 9,
-        sorted("cdfgeb"): 6,
-        sorted("eafb"): 4,
-        sorted("cagedb"): 0,
-        sorted("ab"): 1}
+        digits = {
+            sorted("acedgfb"): 8,
+            sorted("cdfbe"): 5,
+            sorted("gcdfa"): 2,
+            sorted("fbcad"): 3,
+            sorted("dab"): 7,
+            sorted("cefabd"): 9,
+            sorted("cdfgeb"): 6,
+            sorted("eafb"): 4,
+            sorted("cagedb"): 0,
+            sorted("ab"): 1,
+        }
         return digits.get(sorted(text))
+
+
+class Day9(Solution):
+    def part1(self):
+        self.data = """2199943210
+3987894921
+9856789892
+8767896789
+9899965678""".split(
+            "\n"
+        )
+
+        heightmap = [list(map(int, list(row))) for row in self.data]
+
+        low_points = self.find_low_points(heightmap)
+
+        risk_level = sum(self.get_risk_level(point, heightmap) for point in low_points)
+
+        return risk_level
+
+    def find_low_points(self, heightmap):
+        low_points = []
+        for y, row in enumerate(heightmap):
+            for x, col in enumerate(row):
+                if x > 0 and col >= row[x - 1]:
+                    continue
+                if x < len(row) - 1 and col >= row[x + 1]:
+                    continue
+                if y < len(heightmap) - 1 and col >= heightmap[y + 1][x]:
+                    continue
+                if y > 0 and col >= heightmap[y - 1][x]:
+                    continue
+                low_points.append((x, y))
+        return low_points
+
+    def get_risk_level(self, point, heightmap):
+        x, y = point
+        return heightmap[y][x] + 1
+
+    def part2(self):
+        self.data = """2199943210
+3987894921
+9856789892
+8767896789
+9899965678""".split(
+            "\n"
+        )
+        heightmap = [list(map(int, list(row))) for row in self.data]
+        low_points = self.find_low_points(heightmap)
+
+        global basin_points
+        all_basin_points = []
+        for point in low_points:
+            basin_points = []
+            self.get_basin_points(point, heightmap)
+            all_basin_points.append(basin_points)
+        print(all_basin_points)
+        return sum(len(basin_point_list) for basin_point_list in all_basin_points)
+
+    def get_basin_points(self, point, heightmap):
+        for neighbor in self.get_non9_neighbors(point, heightmap):
+            if neighbor not in basin_points:
+                basin_points.append(neighbor)
+                self.get_basin_points(neighbor, heightmap)
+
+    def get_non9_neighbors(self, point, heightmap):
+        x, y = point
+        neighbors = [
+            (i, j)
+            for i, j in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1))
+            if (
+                i in range(len(heightmap))
+                and j in range(len(heightmap[0]))
+                and heightmap[i][j] != 9
+            )
+        ]
+
+        return sorted(neighbors)
+
+
+class Day10(Solution):
+    def part1(self):
+        chunks = self.data
+        chardict = {"<": 0, ">": 0, "{": 0, "}": 0, "(": 0, ")": 0, "[": 0, "]": 0}
+        for chunk in chunks:
+            illegal_character = self.is_valid_chunk(chunk)
+            if illegal_character is not True:
+                print("adding to {}".format(illegal_character))
+                chardict[illegal_character] += 1
+                print(chardict)
+        print(chardict)
+        points = {")": 3, "]": 57, "}": 1197, ">": 25137}
+        return sum(
+            points[char] * count for char, count in chardict.items() if char in points
+        )
+
+    def part2(self):
+        chunks = self.data
+
+        scores = []
+        for chunk in chunks:
+            charstack = self.is_valid_chunk(chunk, part2=True)
+            if charstack is not True:
+                scores.append(self.part2_score(charstack))
+        return sorted(scores)[len(scores) // 2]
+
+    def part2_score(self, charstack):
+        points = {")": 1, "]": 2, "}": 3, ">": 4}
+        score = 0
+        for char in charstack:
+            score *= 5
+            score += points[self.match_char(char)]
+
+        return score
+
+    def is_valid_chunk(self, chunk, part2=False):
+        charstack = []
+
+        for char in chunk:
+            if char in "<({[":
+                charstack.append(char)
+                continue
+            elif char in ">)]}":
+                if not charstack:
+                    return char
+                if (
+                    (charstack[-1] != "<" or char != ">")
+                    and (charstack[-1] != "(" or char != ")")
+                    and (charstack[-1] != "[" or char != "]")
+                    and (charstack[-1] != "{" or char != "}")
+                ):
+                    if part2:
+                        return charstack
+                    return char
+                charstack.pop()
+        if charstack and part2:
+            return charstack
+        return True
+
+    def match_char(self, char):
+        if char == "<":
+            return ">"
+        elif char == ">":
+            return "<"
+        elif char == "(":
+            return ")"
+        elif char == ")":
+            return "("
+        elif char == "[":
+            return "]"
+        elif char == "]":
+            return "["
+        elif char == "{":
+            return "}"
+        elif char == "}":
+            return "{"
+
+
+class Day11(Solution):
+    def part1(self):
+        steps = 100
+        grid = [[int(cell) for cell in str(row)] for row in self.data]
+        self.flash_count = 0
+        for tick in range(steps):
+            grid = self.tick(grid)
+        return self.flash_count
+
+    def part2(self):
+        grid = [[int(cell) for cell in str(row)] for row in self.data]
+        step = 0
+        while True:
+            grid = self.tick(grid)
+            step += 1
+            if all(el == 0 for row in grid for el in row):
+                return step
+
+    def tick(self, grid: List[List[int]]) -> List[List[int]]:
+        grid = self.increment_grid(grid)
+        # print("INCREMENTED")
+        # print(grid)
+        grid = self.flash_grid(grid)
+        # print("FLASHED")
+        # print(grid)
+        grid = self.reset_flashed_points(grid)
+        # print("RESET FLASHED")
+        # print(grid)
+
+        return grid
+
+    def increment_grid(self, grid):
+        return [[cell + 1 if cell >= 0 else cell for cell in row] for row in grid]
+
+    def flash_grid(self, grid: List[List[int]]):
+        flashed_points = []
+        flashable_point = self.find_first_flashable(grid, flashed_points)
+        while flashable_point is not None:
+            # print("Flashing point {}!".format(flashable_point))
+            grid = self.flash_point(grid, flashable_point, flashed_points)
+            self.flash_count += 1
+            flashed_points.append(flashable_point)
+            flashable_point = self.find_first_flashable(grid, flashed_points)
+
+        return grid
+
+    def flash_point(
+        self,
+        grid: List[List[int]],
+        point: tuple[int, int],
+        flashed_points: List[tuple[int, int]],
+    ) -> List[List[int]]:
+        x, y = point
+        grid[y][x] = -1
+        for neighbor in self.get_neighbors(point, grid):
+            if neighbor not in flashed_points:
+                grid[neighbor[1]][neighbor[0]] += 1
+        return grid
+
+    def find_first_flashable(self, grid: List[List[int]], flashed_points: List[tuple]):
+        for y, row in enumerate(grid):
+            for x, cell in enumerate(row):
+                if cell > 9 and cell not in flashed_points:
+                    return (x, y)
+        return None
+
+    def reset_flashed_points(self, grid):
+        for y, row in enumerate(grid):
+            for x, cell in enumerate(row):
+                if cell == -1:
+                    grid[y][x] = 0
+
+        return grid
+
+    def get_neighbors(self, point: tuple[int, int], grid: List[List[int]]):
+        # print("Getting neighbors of {}".format(point))
+        x, y = point
+        return [
+            (x + i, y + j)
+            for i in range(-1, 2)
+            for j in range(-1, 2)
+            if (x + i) in range(len(grid[0])) and (y + j) in range(len(grid))
+        ]
+
 
 if __name__ == "__main__":
     days = [
@@ -273,7 +547,10 @@ if __name__ == "__main__":
         # Day4(year=2021, day=4)
         # Day5(year=2021, day=5),
         # Day7(year=2021, day=7),
-        Day8(year=2021, day=8)
+        # Day8(year=2021, day=8)
+        # Day9(year=2021, day=9)
+        # Day10(year=2021, day=10),
+        Day11(year=2021, day=11, input_as_ints=True)
     ]
     for day in days:
         print(day)

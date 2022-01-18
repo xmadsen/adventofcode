@@ -1,6 +1,7 @@
-from abc import ABC, abstractmethod
-import requests
 import timeit
+from abc import ABC, abstractmethod
+
+import requests
 
 
 class Solution(ABC):
@@ -40,7 +41,7 @@ Part 2: {:16} | {:7.1n} s
         url = "https://adventofcode.com/{}/day/{}/input".format(self.year, self.day)
 
         cookies = {
-            "session": "53616c7465645f5fe04698120125fb6aa59697fede8522a5b8dcb117b7bd5571db965e03dfc1b4fe04d2621b026e3105"
+            "session": "53616c7465645f5f062cab62a61c8f6d4b9ef13ca9e23eb4c1e711be123b30a3c5538f84f282399a83b0c9687a046e16"
         }  # noqa
         text = requests.get(url, cookies=cookies).text
         if as_ints:
