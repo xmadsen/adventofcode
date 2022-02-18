@@ -20,8 +20,6 @@ def vector_for_line(direction, distance):
     }
     return [distance * i for i in dirs[direction]]
 
-
-
 def get_unique_crossed_points():
     wire_points = []
 
